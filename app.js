@@ -13,6 +13,7 @@ require('dotenv').config();
 // Middlewares
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use('/bower_components',express.static(__dirname+'/bower_components'));
 
 app.get('/',(req,res) =>{
     res.render('partials/chatroom');

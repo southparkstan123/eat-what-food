@@ -1,1 +1,30 @@
-Date
+<div>
+    Choose Any Date
+    <div class='poll'>
+    <ul><input type='checkbox' name='date_poll'></ul>
+    </div>
+    <div>
+        <div class='input-group date' id='datetimepicker1'>
+            <input type='text' class="form-control" id='new_date' />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+        <button type='button' id='add_date'>+</button>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        let date = $('#datetimepicker1').datetimepicker();
+        $('#datetimepicker1').data("DateTimePicker").ignoreReadonly(true);
+        $('#add_date').on('click',()=>{
+            console.log($('#new_date').val());
+            let row =(`<ul><input type='checkbox' name='date_poll'>
+                        ${$('#new_date').val()}
+                        </ul>`);
+            $('.poll').append(row)
+        })
+        
+    });
+</script>
