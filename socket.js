@@ -18,6 +18,7 @@ module.exports = (server)=>{
     });
     
     io.on('connection',(socket)=>{
+        console.log(socket.session.passport);
         socket.emit('username',socket.session.passport.user);
     });
 
