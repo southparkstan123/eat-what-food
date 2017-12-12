@@ -27,6 +27,10 @@
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "pg": "^7.4.0",
+<<<<<<< HEAD
+=======
+    "pg-hstore": "^2.3.2",
+>>>>>>> develop
     "redis": "^2.8.0",
     "sequelize": "^4.28.0",
     "socket.io": "^2.0.4",

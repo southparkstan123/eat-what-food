@@ -23,8 +23,12 @@ require('dotenv').config();
 // Middlewares
 app.use(bodyParser.json());
 app.use(express.static('public'));
+<<<<<<< HEAD
 app.use('/bower_components',express.static(__dirname+'/bower_components'));
 
+=======
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+>>>>>>> develop
 
 app.set('view engine', 'handlebars');
 
