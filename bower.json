@@ -1,0 +1,21 @@
+{
+  "name": "eat-what-food",
+  "description": "Enjoy!",
+  "main": "app.js",
+  "authors": [
+    "jason13245 <jason13245@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/southparkstan123/eat-what-food",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "bootstrap": "^3.3.7"
+  }
+}
