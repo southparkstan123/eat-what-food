@@ -1,23 +1,31 @@
-<div id="message-list" style="min-height:80%">
-    <div class="message">
-        <span class="message-time" style="float: right">9:34:01 PM</span>
-        <div class="well">
-            <strong>Dickson Wong</strong> : <p>HAHAHA</p>
-        </div>
-    </div>
-    <div class="message">
-        <span class="message-time" style="float: right">9:34:31 PM</span>
-        <div class="well">
-            <strong>Jason Tong</strong> : <p>HEHE</p>
-        </div>
-    </div>
+<div id="message-list" style="height:500px; overflow-y:scroll">
 </div>
 <form id="message-form" >
     <div class="form-group">
-    <label>Enter Message</label>
-    <textarea class="form-control" id="message" required></textarea>
+    <textarea class="form-control" id="message" required placeholder="Enter Message here..."></textarea>
     <br>
     <input type="submit" class="btn btn-success" value="Send Message">
     <input type="reset" class="btn btn-default" value="Reset">
     </div>
 </form>
+<script>
+    $('#message-form').submit((e)=>{
+    e.preventDefault();
+
+    let message = $('#message').val();
+    let time = new Date().getTime();
+    let username = 'Dickson Wong';
+
+    $('#message-list').append(`<div class="message">
+    <span class="message-time" style="float: right">${time}</span>
+    <div class="well">
+    <strong>${username}</strong> : <p>${message}</p>
+    </div>
+    </div>`);
+
+    $('textarea#message').val('');
+
+    $('#message-list').animate({ scrollTop: $('#message-list').prop("scrollHeight")}, 1000);
+
+})
+</script>
