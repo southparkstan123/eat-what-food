@@ -11,23 +11,32 @@
 <script>
     let socket = io();
 
-    $('#message-form').submit((e)=>{
-        e.preventDefault();
+    $(function () {
+        
+        //Emit 'load_messages_from_redis' event intially
+        socket.emit('load_messages_from_redis');
 
-        let message = $('#message').val();
-        let time = new Date().getTime();
-        let username = 'Dickson Wong';
+        $('#message-form').submit((e)=>{
+            e.preventDefault();
 
-        $('#message-list').append(`<div class="message">
-        <span class="message-time" style="float: right">${time}</span>
-        <div class="well">
-        <strong>${username}</strong> : <p>${message}</p>
-        </div>
-        </div>`);
+            //Emit 'send_message' event
+            socket.emit('send_message', $.trim($('#message').val()));
+        });
 
-        $('textarea#message').val('');
+        //Display message from server side
+        socket.on('display_sent_message', (data) => {
+            let html = `<span class="message-time">${moment(data.date).format('LTS')}</span><div class="well"><strong>${data.username}</strong> : <p>${data.content}</p></div>`;
+            $('#message-list').append(html);
+            $('#message').val('');
+            $('#message-list').animate({ scrollTop: $('#message-list').prop("scrollHeight")}, 1000);
+        });
 
-        $('#message-list').animate({ scrollTop: $('#message-list').prop("scrollHeight")}, 1000);
-
-})
+        socket.on('display_all_messages', (data) => {
+            let html = '';
+            data.forEach((message) => {
+                html += `<span class="message-time">${moment(message.date).format('LTS')}</span><div class="well"><strong>${message.username}</strong> : <p>${message.content}</p></div>`;
+            });
+            $('#message-list').append(html);
+        });
+    });
 </script>
