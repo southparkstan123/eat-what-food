@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "eat-what-food",
+    "host": "127.0.0.1",
+    "dialect": "psql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "eat-what-food-test",
+    "host": "127.0.0.1",
+    "dialect": "psql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "eat-what-food-production",
+    "host": "127.0.0.1",
+    "dialect": "psql"
+  }
+}
