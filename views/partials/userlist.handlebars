@@ -1,12 +1,41 @@
 <h5>3 user(s) logged in</h5>
-<ul class="list-group">
-    <li class="list-group-item">
-    Dickson Wong
-    </li>
-    <li class="list-group-item">
-    Jason Tong
-    </li>
-    <li class="list-group-item">
-    Joe Wong
-    </li>
-</ul>
+<div id="user-list" style="overflow-y:scroll; height:200px">
+    <ul class="list-group">
+        <li class="list-group-item">
+        Dickson Wong
+        </li>
+        <li class="list-group-item">
+        Jason Tong
+        </li>
+        <li class="list-group-item">
+        Joe Wong
+        </li>
+    </ul>
+</div>
+
+<button class="btn btn-sm btn-warning">Leave Chatroom</button>
+<button class="btn btn-sm btn-primary">Invite Somebody</button>
+<script>
+    $(function () {
+        
+        //Emit 'load_messages_from_redis' event intially
+        socket.emit('load_users_in_chatroom_from_redis');
+
+        //Display userlist from server side
+        socket.on('display_userlist', (data) => {
+            let html = `<li class="list-group-item">${data.sername}</li>`;
+            $('#message-list').append(html);
+            $('#message').val('');
+        });
+
+        //Update userlist when a user is left
+        socket.on('update_uswrlist', (data) => {
+            let html = '';
+            data.forEach((user) => {
+                html += `<li class="list-group-item">${user.username}</li>`;
+            });
+            $('#message-list').append(html);
+        });
+
+    });
+</script>

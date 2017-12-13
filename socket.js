@@ -22,6 +22,7 @@ module.exports = (server)=>{
         //socket.session.passport
         // socket.emit('show_who_logged_in',socket.session.passport.user);
 
+
         socket.on('load_messages_from_redis', () => {
             client.lrange('message_list',0, -1, (err, reply)=>{
                 if(reply){
@@ -43,6 +44,7 @@ module.exports = (server)=>{
     
             client.rpush('message_list', JSON.stringify(messageObj) , (err, reply)=>{
                 if(reply){
+                    console.log(reply);
                     console.log('message saved');
                     socket.emit('display_sent_message', messageObj);
                 }
