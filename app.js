@@ -33,4 +33,4 @@ app.set('view engine', 'handlebars');
 
 app.use('/', router);
 
-app.listen(8080);
+server.listen(8080);
