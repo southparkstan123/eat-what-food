@@ -1,10 +1,5 @@
 node_modules
 .env
 npm-debug.log
-<<<<<<< HEAD
-bower_components
-config/config.json
-=======
 config/config.json
 bower_components
->>>>>>> develop
