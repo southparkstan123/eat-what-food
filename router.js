@@ -25,7 +25,7 @@ module.exports = (express) => {
     }
 
     router.get('/', isLoggedIn ,(req,res) =>{
-        res.render('partials/chatroom');
+        res.render('chatroom');
     });
 
     // The Authentication Route
@@ -53,7 +53,7 @@ module.exports = (express) => {
 
     // Login url
     router.get('/login',isLoggedOut,(req,res) => {
-        res.sendFile(__dirname+ '/login.html');
+        res.render('login');
     });
 
     // Logout url
@@ -61,6 +61,16 @@ module.exports = (express) => {
         req.logout();
         res.redirect("/")
     });
+
+    //Lobby url
+    router.get('/lobby' ,(req,res) => {
+        res.render('lobby');
+    });
+
+    //Chatroom url
+    router.get('/chatroom', (req,res) => {
+        res.render('chatroom');
+    })
     
     router.get('*', (req, res) => {
         res.status(404).send('Page not found');
