@@ -23,6 +23,7 @@
 
         //Display message from server side
         socket.on('display_sent_message', (data) => {
+            console.log(data);
             let html = `<span class="message-time">${moment(data.date).format('LTS')}</span><div class="well"><strong>${data.username}</strong> : <p>${data.content}</p></div>`;
             $('#message-list').append(html);
             $('#message').val('');

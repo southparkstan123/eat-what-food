@@ -1,40 +1,41 @@
-<h5>3 user(s) logged in</h5>
-<div id="user-list" style="overflow-y:scroll; height:200px">
-    <ul class="list-group">
-        <li class="list-group-item">
-        Dickson Wong
-        </li>
-        <li class="list-group-item">
-        Jason Tong
-        </li>
-        <li class="list-group-item">
-        Joe Wong
-        </li>
+<div id="chatroom-status"></div>
+<div id="chatroom-container" style="overflow-y:scroll; height:200px">
+    <ul class="list-group" id="user-list">
     </ul>
 </div>
-
-<button class="btn btn-sm btn-warning">Leave Chatroom</button>
-<button class="btn btn-sm btn-primary">Invite Somebody</button>
+<div id="user-panel"></div>
+{{!-- <button class="btn btn-sm btn-warning" id="leave" >Leave Chatroom</button>
+<button class="btn btn-sm btn-primary" id="invite">Invite Somebody</button> --}}
 <script>
     $(function () {
+
+        //Click the 'Leave chatroom' button to logout
+        $("body").on("click", "#leave",(e) => {
+            let userID = $(e.target).attr('user-id');
+            socket.emit('user_leave_chatroom', userID);
+            alert('Bye Bye!');
+            window.location.href = '/logout';
+        });
         
         //Emit 'load_messages_from_redis' event intially
         socket.emit('load_users_in_chatroom_from_redis');
 
         //Display userlist from server side
         socket.on('display_userlist', (data) => {
-            let html = `<li class="list-group-item">${data.sername}</li>`;
-            $('#message-list').append(html);
-            $('#message').val('');
+            let userlist_content = '';
+            data.forEach((user) => {
+                userlist_content += `<li class="list-group-item">${user.username}</li>`;
+            });
+            $('ul#user-list').html(userlist_content);
+            $('#chatroom-status').html(`<h5 id="chatroom-status">${data.length} user(s) in this chatroom</h5>`);
         });
 
-        //Update userlist when a user is left
-        socket.on('update_uswrlist', (data) => {
-            let html = '';
-            data.forEach((user) => {
-                html += `<li class="list-group-item">${user.username}</li>`;
-            });
-            $('#message-list').append(html);
+        //When another user enter the chatroom
+        socket.on('user_enter_chatroom', (data) => {
+            console.log(data.profile);
+            let html = `<li class="list-group-item">${data.profile.displayName}</li>`;
+            $('ul#user-list').append(html);
+            $('#user-panel').html(`<button class="btn btn-sm btn-warning" id="leave" user-id="${data.profile.id}">Leave Chatroom</button>`);
         });
 
     });
