@@ -8,8 +8,8 @@ const expressSession = require('express-session');
 // User-defined Modules.
 const app = express();
 const server = require('http').Server(app);
-// const setupPassport = require('./passport');
-// const session = require('./session')
+const setupPassport = require('./passport');
+const session = require('./session')
 const io = require('./socket')(server);
 const router = require('./router')(express);
 
@@ -27,9 +27,9 @@ app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 app.set('view engine', 'handlebars');
 
-// app.use(expressSession(session.settings));
+app.use(expressSession(session.settings));
 
-// setupPassport(app);
+setupPassport(app);
 
 app.use('/', router);
 

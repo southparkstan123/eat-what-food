@@ -1,1 +1,41 @@
-Chatroom
+<div id="message-list" style="height:500px; overflow-y:scroll">
+</div>
+<form id="message-form" >
+    <div class="form-group">
+    <textarea class="form-control" id="message" required placeholder="Enter Message here..."></textarea>
+    <br>
+    <input type="submit" class="btn btn-success" value="Send Message">
+    <input type="reset" class="btn btn-default" value="Reset">
+    </div>
+</form>
+<script>
+    $(function () {
+        
+        //Emit 'load_messages_from_redis' event intially
+        socket.emit('load_messages_from_redis');
+
+        $('#message-form').submit((e)=>{
+            e.preventDefault();
+
+            //Emit 'send_message' event
+            socket.emit('send_message', $.trim($('#message').val()));
+        });
+
+        //Display message from server side
+        socket.on('display_sent_message', (data) => {
+            console.log(data);
+            let html = `<span class="message-time">${moment(data.date).format('LTS')}</span><div class="well"><strong>${data.username}</strong> : <p>${data.content}</p></div>`;
+            $('#message-list').append(html);
+            $('#message').val('');
+            $('#message-list').animate({ scrollTop: $('#message-list').prop("scrollHeight")}, 1000);
+        });
+
+        socket.on('display_all_messages', (data) => {
+            let html = '';
+            data.forEach((message) => {
+                html += `<span class="message-time">${moment(message.date).format('LTS')}</span><div class="well"><strong>${message.username}</strong> : <p>${message.content}</p></div>`;
+            });
+            $('#message-list').append(html);
+        });
+    });
+</script>
