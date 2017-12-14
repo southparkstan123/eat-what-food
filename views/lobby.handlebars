@@ -1,0 +1,35 @@
+<div class="row">
+    <h2>Please Select Group</h2>
+    <ul class="list-group" id="user-list">
+        <li class="list-group-item">Enter Chatroom</li>
+    </ul>
+</div>
+<div class="row">
+    <h2>Create Group</h2>
+    <form id="create-group" class="form-inline">
+         <div class="form-group">
+            <input type="text" class="form-control" id="group-name" aria-describedby="groupHelp" placeholder="Enter group name">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <small id="groupHelp" class="form-text text-muted">Group name is required and unique</small>
+    </form>
+</div>
+<div class="row text-center">
+    <button class="btn btn-danger">Logout</button>
+</div>
+<script>
+    $(function(){
+        //Emit 'load_groups_from_databases' event intially
+        socket.emit('load_groups_from_databases');
+
+        $('#create-group').submit((e)=>{
+            e.preventDefault();
+
+            //Emit 'create_group' event
+            socket.emit('create_group', $.trim($('#group-name').val()));
+        });
+
+        socket.on('update_group_list')
+
+    })
+</script>
