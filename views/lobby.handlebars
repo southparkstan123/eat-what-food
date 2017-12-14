@@ -1,7 +1,9 @@
 <div class="row">
     <h2>Please Select Group</h2>
     <ul class="list-group" id="user-list">
-        <li class="list-group-item">Enter Chatroom</li>
+        <li class="list-group-item">
+            <button class="btn btn-success" id="enter-chatroom">Enter Chatroom 1</button>
+        </li>
     </ul>
 </div>
 <div class="row">
@@ -15,7 +17,7 @@
     </form>
 </div>
 <div class="row text-center">
-    <button class="btn btn-danger">Logout</button>
+    <button class="btn btn-danger" id="logout">Logout</button>
 </div>
 <script>
     $(function(){
@@ -29,7 +31,20 @@
             socket.emit('create_group', $.trim($('#group-name').val()));
         });
 
-        socket.on('update_group_list')
+        $('#enter-chatroom').click((e) =>{
+            e.preventDefault();
+            socket.emit('user_enter_chatroom', );
+            window.location.href = '/chatroom';
+        });
 
+        //Click the 'Leave chatroom' button to logout
+        $("#logout").click((e) => {
+            let isLogout = confirm('Are you sure to logout?');
+            if (isLogout == true) {
+                alert('See you again!');
+                socket.emit('user_logout');
+                window.location.href = '/logout';
+            }
+        });
     })
 </script>

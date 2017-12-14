@@ -26,15 +26,29 @@ module.exports = (server)=>{
     
     io.on('connection',(socket) => {
 
-        socket.emit('user_enter_chatroom',socket.session.passport.user);
+        socket.emit('user_online',socket.session.passport.user);
+
+        socket.on('user_enter_chatroom', () => {
+            let userObj = {
+                userID : socket.session.passport.user.profile.id,
+                username : socket.session.passport.user.profile.displayName
+            };
+
+            client.rpush('users_in_chatroom', JSON.stringify(userObj), (err, reply) =>{
+                if(reply){
+                    console.log(userObj);
+                    io.emit('add_user_in_chatroom', userObj);
+                }
+            });
+        })
 
         socket.on('load_users_in_chatroom_from_redis', () =>{
-            client.lrange('online_user_list',0, -1, (err, reply)=>{
+            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
                 if(reply){
-                    let online_user_list = reply.map((message) => {
-                        return JSON.parse(message);
-                    })
-                    io.emit('display_userlist', online_user_list);
+                    let online_user_list = reply.map((user) => {
+                        return JSON.parse(user);
+                    });
+                    io.emit('show_users_in_chatroom', online_user_list);
                 }
             });
         });
@@ -65,7 +79,7 @@ module.exports = (server)=>{
             });
         });
 
-        socket.on('user_leave_chatroom',(userID) =>{            
+        socket.on('user_logout', () => {
             client.lrange('online_user_list',0, -1, (err, reply)=>{
                 if(reply){
                     let old_user_list = reply.map((user) => {
@@ -73,7 +87,7 @@ module.exports = (server)=>{
                     });
                     console.log(old_user_list);
                     let leave_user = old_user_list.filter((user)=>{
-                        return user.userID == userID;
+                        return user.userID == socket.session.passport.user.profile.id;
                     });
                     console.log(JSON.stringify(leave_user[0]));
                     client.lrem('online_user_list', 0, JSON.stringify(leave_user[0]), (err,reply) =>{
@@ -90,7 +104,34 @@ module.exports = (server)=>{
                     })
                 }
             });
-        })
+        });
+
+        socket.on('user_leave_chatroom',() => {
+            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
+                if(reply){
+                    let old_user_list = reply.map((user) => {
+                        return JSON.parse(user);
+                    });
+                    console.log(old_user_list);
+                    let leave_user = old_user_list.filter((user)=>{
+                        return user.userID == socket.session.passport.user.profile.id;
+                    });
+                    console.log(JSON.stringify(leave_user[0]));
+                    client.lrem('users_in_chatroom', 0, JSON.stringify(leave_user[0]), (err,reply) =>{
+                        if(reply){
+                            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
+                                if(reply){
+                                    let new_user_list = reply.map((user) => {
+                                        return JSON.parse(user);
+                                    });
+                                    io.emit('show_users_in_chatroom', new_user_list);
+                                }
+                            });
+                        }
+                    })
+                }
+            });
+        });
     });
 
     return io;
