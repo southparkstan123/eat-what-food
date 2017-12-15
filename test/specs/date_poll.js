@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-describe('webdriver.io page', function() {
+describe('Connect page', ()=>{
     beforeEach(()=>{
         browser.url('http://localhost:8080');
     })
@@ -8,13 +8,13 @@ describe('webdriver.io page', function() {
         var title = browser.getTitle();
         assert.equal(title, 'Eat What Food');
     });
-    it('data value can be added',()=>{
+    it('date value can be added',()=>{
         $("#calendar").click();
         let val = $('#new_date').getValue();
         val = (val !="")
         expect(val).toBe(true);
     })
-    it('should hv date table',()=>{
+    xit('should hv date table',()=>{
         $('#calendar').click();
         $('#add_date').click();
         let table = $('#date_list').getTagName();

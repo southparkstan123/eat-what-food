@@ -23,13 +23,14 @@ module.exports = (server)=>{
     io.on('connection',(socket)=>{
         //socket.emit('username',socket.session.passport.user);
         socket.on('date_created',(date)=>{
-            io.emit('date_created',date)
+            console.log(date);
+            io.emit('date_table_updated',date)
         });
         socket.on('vote_change',(choice)=>{
             if(choice == 'join'){
-                db
+                console.log(choice);
             }else if(choice == 'no_join'){
-
+                console.log(choice)
             }
         })
 
