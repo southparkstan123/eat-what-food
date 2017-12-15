@@ -44,9 +44,17 @@
             }
         })
 
-        socket.on('date_table_updated',(date)=>{
-            
-                $('.date_lsit').replaceAll(data)
+        socket.on('date_table_updated',(data)=>{
+            console.log(data);
+            let table=`<ul class ="date_list" style ='list-style-type:none;padding:0px'>${list}</ul>`
+            let list =`<li><input type='checkbox' class='date_poll'> ${date}
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="70"
+                    aria-valuemin="0" aria-valuemax="100" style="width:${percent_of_people}%">
+                    </div>
+                </div>
+            </li>`
+                $('.date_lsit').replaceAll(table)
         })
     });
 
