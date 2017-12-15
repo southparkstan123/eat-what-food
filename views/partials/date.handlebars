@@ -37,7 +37,6 @@
             }
         })
         $('.poll').on('click','.date_poll', function(){
-            
             if($(this).prop('checked')==true){
                 socket.emit('vote_change','join')
             }else if($(this).prop('checked') == false){
