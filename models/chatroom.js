@@ -2,7 +2,8 @@
 module.exports = (sequelize, DataTypes) => {
   var chatroom = sequelize.define('chatrooms', {
     createdBy: DataTypes.INTEGER,
-    chatroomName: DataTypes.STRING
+    chatroomName: DataTypes.STRING,
+    url: DataTypes.STRING
   });
 
   chatroom.associate = function (models) {
