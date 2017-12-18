@@ -2,15 +2,14 @@
 module.exports = (sequelize, DataTypes) => {
   var food = sequelize.define('food', {
     foodName: DataTypes.STRING
-  }, {
-      classMethods: {
-        associate: function (models) {
-          // associations can be defined here
-          food.hasMany(models.votefood, {
-            foreignKey: "foodId", sourceKey: "id"
-          })
-        }
-      }
-    });
+  });
+
+  food.associate = function (models) {
+    // associations can be defined here
+    food.hasMany(models.voteFoods, {
+      foreignKey: "foodId", sourceKey: "id"
+    })
+  }
+
   return food;
 };

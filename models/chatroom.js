@@ -2,19 +2,19 @@
 module.exports = (sequelize, DataTypes) => {
   var chatroom = sequelize.define('chatrooms', {
     createdBy: DataTypes.INTEGER,
-    chatroomName: DataTypes.STRING
-  }, {
-      classMethods: {
-        associate: function (models) {
-          // associations can be defined here
-          chatroom.belongsTo(models.users, {
-            foreignKey: "id", sourceKey: "createdBy"
-          })
-          chatroom.hasMany(models.userchatroom, {
-            foreignKey: "chatroomId", sourceKey: "id"
-          })
-        }
-      }
-    });
+    chatroomName: DataTypes.STRING,
+    url: DataTypes.STRING
+  });
+
+  chatroom.associate = function (models) {
+    // associations can be defined here
+    chatroom.belongsTo(models.users, {
+      foreignKey: "id", sourceKey: "createdBy"
+    })
+    chatroom.hasMany(models.userChatrooms, {
+      foreignKey: "chatroomId", sourceKey: "id"
+    })
+  }
+
   return chatroom;
 };
