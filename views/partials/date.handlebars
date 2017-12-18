@@ -27,6 +27,7 @@
         let date = $('#datetimepicker1').datetimepicker();
         $('#datetimepicker1').data("DateTimePicker").ignoreReadonly(true);
         
+        
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
                 socket.emit('date_created',$('#new_date').val());
@@ -36,46 +37,33 @@
         })
         $('.poll').on('click','.date_poll', function(){
             if($(this).prop('checked')==true){
-                socket.emit('vote_change','join') //unique name for date vote
+                socket.emit('date_vote_change','join') //unique name for date vote
             }else if($(this).prop('checked') == false){
-                socket.emit('vote_change','no_join')
+                socket.emit('date_vote_change','no_join')
             }
         })
 
         socket.on('date_table_updated',(data)=>{
-            console.log(data,'recieved from server');
-            let list =`<li><input type='checkbox' class='date_poll'> ${data.date}
+            //console.log(data,'recieved from server');
+            let list =""
+            for(let i = 0;i<data.length;i++){
+                list +=`<li><input type='checkbox' class='date_poll'> ${data[i].date}
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
-                    aria-valuemin="0" aria-valuemax="100" style="width:${data.percent_of_people}%">
+                    aria-valuemin="0" aria-valuemax="100" style="width:${data[i].percent_of_people}%">
                     </div>
                 </div>
             </li>`
+            }
             let table=`<ul class ="date_list" style ='list-style-type:none;padding:0px'>${list}</ul>`
                 $('#date_list').html(table)
         })
 
         socket.on('date_process_bar_increase',(data)=>{
-            let list =`<li><input type='checkbox' class='date_poll' checked> ${data.date}
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="70"
-                    aria-valuemin="0" aria-valuemax="100" style="width:${data.percent_of_people}%">
-                    </div>
-                </div>
-            </li>`
-            let table=`<ul class ="date_list" style ='list-style-type:none;padding:0px'>${list}</ul>`
-                $('#date_list').html(table)
+            
         })
         socket.on('date_process_bar_decrease',(data)=>{
-            let list =`<li><input type='checkbox' class='date_poll'> ${data.date}
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="70"
-                    aria-valuemin="0" aria-valuemax="100" style="width:${data.percent_of_people}%">
-                    </div>
-                </div>
-            </li>`
-            let table=`<ul class ="date_list" style ='list-style-type:none;padding:0px'>${list}</ul>`
-                $('#date_list').html(table)
+            
         })
     });
 

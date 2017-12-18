@@ -23,24 +23,38 @@ module.exports = (server)=>{
     io.on('connection',(socket)=>{
         //socket.emit('username',socket.session.passport.user);
         socket.on('date_created',(date)=>{
-            let data ={
-                date:[date],
-                percent_of_people:[50]
-            }
+
+            date>>db
+
+            db >>>data obj 
+            
+            let data=[{
+                date:'testing date',
+                percent_of_people:60
+            },{
+                date:'testing date 2',
+                percent_of_people:50
+            }];
             io.emit('date_table_updated',data)
         });
-        socket.on('vote_change',(choice)=>{
+        socket.on('date_vote_change',(choice)=>{
             if(choice == 'join'){
-                let data={
-                    date:['testing date'],
-                    percent_of_people:[60]
-                };
+                let data=[{
+                    date:'testing date',
+                    percent_of_people:60
+                },{
+                    date:'testing date 2',
+                    percent_of_people:50
+                }];
                 io.emit('date_process_bar_increase',data)
             }else if(choice == 'no_join'){
-                let data ={
-                    date:['testing date'],
-                    percent_of_people:[50]
-                }
+                let data=[{
+                    date:'testing date',
+                    percent_of_people:60
+                },{
+                    date:'testing date 2',
+                    percent_of_people:50
+                }];
                 io.emit('date_process_bar_decrease',data)
             }
         })
