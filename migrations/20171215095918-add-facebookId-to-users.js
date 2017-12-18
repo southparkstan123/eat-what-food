@@ -14,7 +14,7 @@ module.exports = {
         'users',
         'facebookId',
         {
-          type: Sequelize.STRING,
+          type: Sequelize.BIGINT,
           allowNull: true
         }
       )]
@@ -29,7 +29,7 @@ module.exports = {
       return queryInterface.dropTable('users');
     */
     return [
-      queryInterface.removeColumn('users', 'facebookId'),
-    ];
+      queryInterface.removeColumn('users', 'facebookId')
+    ]
   }
 };
