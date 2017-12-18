@@ -24,9 +24,6 @@ module.exports = (server)=>{
         //socket.emit('username',socket.session.passport.user);
         socket.on('date_created',(date)=>{
 
-            date>>db
-
-            db >>>data obj 
             
             let data=[{
                 date:'testing date',
