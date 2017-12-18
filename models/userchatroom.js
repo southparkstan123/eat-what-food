@@ -9,16 +9,16 @@ module.exports = (sequelize, DataTypes) => {
     userChatroom.belongsTo(models.users, {
       foreignKey: "id", sourceKey: "userId"
     })
-    userChatroom.hasMany(models.votelocation, {
+    userChatroom.hasMany(models.voteLocations, {
       foreignKey: "userChatroomId", sourceKey: "id"
     })
-    userChatroom.belongsTo(models.chatroom, {
+    userChatroom.belongsTo(models.chatrooms, {
       foreignKey: "id", sourceKey: "chatroomId"
     })
-    userChatroom.hasMany(models.votefood, {
+    userChatroom.hasMany(models.voteFoods, {
       foreignKey: "userChatroomId", sourceKey: "id"
     })
-    userChatroom.hasMany(models.votedates, {
+    userChatroom.hasMany(models.voteDates, {
       foreignKey: "userChatroomId", sourceKey: "id"
     })
   }
