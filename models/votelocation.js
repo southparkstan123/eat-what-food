@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 
   voteLocation.associate = function (models) {
     // associations can be defined here
-    voteLocation.belongsTo(models.userchatroom, {
+    voteLocation.belongsTo(models.userChatrooms, {
       foreignKey: "id", sourceKey: "userChatroomId"
     })
     voteLocation.belongsTo(models.locations, {

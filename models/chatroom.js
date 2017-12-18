@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     chatroomName: DataTypes.STRING
   });
 
-  classroom.associate = function (models) {
+  chatroom.associate = function (models) {
     // associations can be defined here
     chatroom.belongsTo(models.users, {
       foreignKey: "id", sourceKey: "createdBy"
