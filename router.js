@@ -3,6 +3,12 @@ const app = express();
 const http = require('http').Server(app);
 const passport = require('passport');
 const client = require('./database');
+const UserModel = require('./models').users;
+const ChatroomModel = require('./models').chatrooms;
+const UserChatroomModel = require('./models').userChatrooms;
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
+const uuidv1 = require('uuid/v1');
 
 module.exports = (express) => {
     const router = express.Router();
@@ -38,16 +44,27 @@ module.exports = (express) => {
         failureRedirect:'/login'
     }),(req,res) => {
 
-        let userObj = {
-            userID : req.user.profile.id,
-            username : req.user.profile.displayName
-        };
-
-        client.rpush('online_user_list', JSON.stringify(userObj), (err, reply) =>{
-            if(reply){
-                console.log(reply);
-                res.redirect('/lobby');
+        UserModel.findOrCreate(
+            {
+                where: {
+                    facebookId: req.user.profile.id
+                },
+                defaults: {
+                    facebookId: req.user.profile.id,
+                    userName : req.user.profile.displayName
+                }
             }
+        ).spread((user, created) => {
+            console.log(user.get({
+                plain: true
+            }))
+
+            client.rpush('online_user_list', JSON.stringify(user), (err, reply) =>{
+                if(reply){
+                    console.log(reply);
+                    res.redirect('/lobby');
+                }
+            });
         });
     });
 
@@ -68,8 +85,99 @@ module.exports = (express) => {
     });
 
     //Chatroom url
-    router.get('/chatroom',isLoggedIn, (req,res) => {
-        res.render('chatroom');
+    router.get('/chatroom/:url',isLoggedIn, (req,res) => {
+        ChatroomModel.findOne({
+            where:{
+                url : req.params.url
+            }
+        }).then((chatroom) => {
+            res.render('chatroom', {chatroom : chatroom});
+        }).catch(err => console.log(err));
+    });
+
+    router.get('/api/chatroom_list',isLoggedIn, (req,res) =>{
+        UserModel.findOne({
+            where: {
+                facebookId: {
+                    [Op.eq]: req.user.profile.id
+                }
+            },
+            include: [
+                {
+                    model: ChatroomModel,
+                    as: 'creates',
+                    order: [
+                        [ChatroomModel, 'createdAt', 'ASC']
+                    ]
+                },
+                {
+                    model: ChatroomModel,
+                    as: 'invited',
+                    order: [
+                        [ChatroomModel, 'createdAt', 'ASC']
+                    ]
+                },
+            ]
+        }).then((user) => {
+
+            let result = {};
+
+            result.id = user.id;
+            result.userName = user.userName;
+            result.facebookId = user.facebookId;
+            result.createdAt = user.createdAt;
+            result.updatedAt = user.updatedAt;
+            result.creates = user.creates.sort((a,b) => {
+                return a.createdAt - b.createdAt;
+            });
+
+            result.invited = user.invited.filter(chatroom => {
+                return chatroom.createdBy !== chatroom.userChatrooms.userId;
+            }).sort((a,b) => {
+                return a.createdAt - b.createdAt;
+            });
+
+            res.json(result);
+        });
+    });
+
+    router.post('/api/create_chatroom',isLoggedIn, (req,res) =>{
+        console.log(req.body);
+        UserModel.findOne({
+            where : {
+                facebookId: {
+                    [Op.eq]: req.user.profile.id
+                }
+            },
+            attributes: ['id']
+        }).then((user) => {
+            let chatroom = new ChatroomModel();
+            chatroom.createdBy = user.id;
+            chatroom.chatroomName = req.body.chatroomName;
+            chatroom.url = uuidv1();
+
+            chatroom.save().then((chatroom)=>{
+                let userChatroom = new UserChatroomModel();
+                userChatroom.userId = user.id;
+                userChatroom.chatroomId = chatroom.id;
+                userChatroom.isJoin = true;
+
+                userChatroom.save().then((userChatroom)=>{
+                    let initMessageObj = {
+                        username: req.user.profile.displayName,
+                        userid: req.user.profile.id,
+                        content: 'This is the first message. Enjoy!',
+                        date: new Date().getTime()
+                    };
+                    client.rpush('message_list_for_'+ chatroom.url,JSON.stringify(initMessageObj),(err ,reply) => {
+                        if(reply){
+                            console.log(chatroom.url);
+                            res.json(chatroom);
+                        }
+                    });
+                }).catch(err => console.log(err));
+            }).catch(err => console.log(err));
+        });
     })
     
     router.get('*', (req, res) => {

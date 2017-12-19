@@ -1,19 +1,52 @@
-<div id="chatroom-status"></div>
+<div id="chatroom-status" chatroom-url="{{chatroom.url}}"></div>
 <div id="chatroom-container" style="overflow-y:scroll; height:200px">
     <ul class="list-group" id="user-list">
     </ul>
 </div>
 <div id="user-panel"></div>
 <button class="btn btn-sm btn-warning" id="leave">Leave Chatroom</button>
-{{!-- <button class="btn btn-sm btn-primary" id="invite">Invite Somebody</button> --}}
+<button class="btn btn-sm btn-primary" id="invite" data-toggle="modal" data-target="#myModal">Invite Somebody</button>
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Invite Users</h4>
+            </div>
+            <div class="modal-body">
+                <form id="">
+                    <div class="form-group">
+                    <label for="sel1">Select users to invite (hold shift to select more than one):</label>
+                    <select multiple class="form-control" id="sel2">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Invite</button>
+                </form>
+            
+            </div>
+        </div>
+      
+    </div>
+</div>
 <script>
     $(function () {
+
+        let chatroom_url = $('#chatroom-status').attr('chatroom-url');
+        console.log(chatroom_url);
 
         //Click the 'Leave chatroom' button to logout
         $("#leave").click((e) => {
             let isLeaveChatroom = confirm('Are you sure to leave this chatroom?');
             if (isLeaveChatroom == true) {
-                
+                socket.emit('user_leave_chatroom',chatroom_url);
                 window.location.href = '/lobby';
             }
         });
@@ -24,7 +57,7 @@
         });
 
         //Emit 'load_messages_from_redis' event intially
-        socket.emit('load_users_in_chatroom_from_redis');
+        socket.emit('load_users_in_chatroom_from_redis', chatroom_url);
 
         //Display userlist in chatroom
         socket.on('show_users_in_chatroom', (data) => {
@@ -42,6 +75,11 @@
             let html = `<li class="list-group-item">${data.username}</li>`;
             $('ul#user-list').append(html);
         });
+
+        socket.on('error_message', (message) =>{
+            alert(message);
+            window.location.href = '/lobby';
+        })
 
     });
 </script>

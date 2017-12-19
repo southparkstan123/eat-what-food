@@ -33,13 +33,14 @@
     $(function () {
         
         //Emit 'load_messages_from_redis' event intially
-        socket.emit('load_messages_from_redis');
+        socket.emit('load_messages_from_redis', $('#chatroom-status').attr('chatroom-url'));
 
         $('#message-form').submit((e)=>{
             e.preventDefault();
 
             //Emit 'send_message' event
-            socket.emit('send_message', $.trim($('#message').val()));
+            console.log($.trim($('#message').val()));
+            socket.emit('send_message', $('#chatroom-status').attr('chatroom-url'), $.trim($('#message').val()));
         });
 
         //Display message from server side

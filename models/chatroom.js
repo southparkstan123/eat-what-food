@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     chatroom.belongsTo(models.users, {
       foreignKey: "id", sourceKey: "createdBy"
     })
-    chatroom.hasMany(models.userChatrooms, {
-      foreignKey: "chatroomId", sourceKey: "id"
+    chatroom.belongsToMany(models.users, {
+      foreignKey: "chatroomId", sourceKey: "id", as: "invited", through: models.userChatrooms
     })
   }
 

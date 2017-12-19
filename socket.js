@@ -1,6 +1,12 @@
 const session = require("./session");
 const socketIOSession = require("socket.io.session");
 const client = require('./database');
+const uuidv1 = require('uuid/v1');
+const ChatRoomModel = require('./models').chatrooms;
+const UserModel = require('./models').users;
+const UserChatroomModel = require('./models').userChatrooms;
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 client.once('ready', function() {
     // Flush Redis DB
@@ -28,43 +34,59 @@ module.exports = (server)=>{
 
         socket.emit('user_online',socket.session.passport.user);
 
-        socket.on('user_enter_chatroom', () => {
+        socket.on('user_enter_chatroom', (chatroom_url) => {
             let userObj = {
                 userID : socket.session.passport.user.profile.id,
                 username : socket.session.passport.user.profile.displayName
             };
 
-            client.rpush('users_in_chatroom', JSON.stringify(userObj), (err, reply) =>{
-                if(reply){
-                    console.log(userObj);
-                    io.emit('add_user_in_chatroom', userObj);
+            client.sadd('users_in_chatroom_' + chatroom_url, JSON.stringify(userObj), (err, reply) =>{
+                if(reply === 1){
+                    console.log('enter');
+                    console.log(reply);
+                    
+                    socket.join("chatroom_" + chatroom_url);
+
+                    io.to("chatroom_" + chatroom_url).emit('add_user_in_chatroom', userObj);
+                }else if(reply === 0){
+                    errorMessage = 'You have already enter this chatroom!'
+                    io.to("chatroom_" + chatroom_url).emit('error_message', errorMessage);
                 }
             });
-        })
+        });
 
-        socket.on('load_users_in_chatroom_from_redis', () =>{
-            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
+        socket.on('invite_user_to_chatroom', (chatroom_url, user_list) => {
+
+        });
+
+        socket.on('load_users_in_chatroom_from_redis', (chatroom_url) =>{
+            client.smembers('users_in_chatroom_' + chatroom_url, (err, reply)=>{
                 if(reply){
                     let online_user_list = reply.map((user) => {
                         return JSON.parse(user);
                     });
-                    io.emit('show_users_in_chatroom', online_user_list);
+                    console.log('list');
+                    console.log(online_user_list);
+                    socket.join("chatroom_" + chatroom_url);
+                    io.in('chatroom_' + chatroom_url).emit('show_users_in_chatroom', online_user_list);
                 }
             });
         });
 
-        socket.on('load_messages_from_redis', () => {
-            client.lrange('message_list',0, -1, (err, reply)=>{
+        socket.on('load_messages_from_redis', (chatroom_url) => {
+            client.lrange('message_list_for_' + chatroom_url ,0, -1, (err, reply)=>{
                 if(reply){
                     let message_list = reply.map((message) => {
                         return JSON.parse(message);
                     })
-                    io.emit('display_all_messages', message_list);
+                    console.log('messages');
+                    console.log(message_list);
+                    io.to("chatroom_" + chatroom_url).emit('display_all_messages', message_list);
                 }
             });
         });
 
-        socket.on('send_message',(content) => {
+        socket.on('send_message',(chatroom_url, content) => {
             let messageObj = {
                 username: socket.session.passport.user.profile.displayName,
                 userid: socket.session.passport.user.profile.id,
@@ -72,9 +94,9 @@ module.exports = (server)=>{
                 date: new Date().getTime()
             };
     
-            client.rpush('message_list', JSON.stringify(messageObj) , (err, reply)=>{
+            client.rpush('message_list_for_' + chatroom_url, JSON.stringify(messageObj) , (err, reply)=>{
                 if(reply){
-                    io.emit('display_sent_message', messageObj);
+                    io.to("chatroom_" + chatroom_url).emit('display_sent_message', messageObj);
                 }
             });
         });
@@ -106,25 +128,25 @@ module.exports = (server)=>{
             });
         });
 
-        socket.on('user_leave_chatroom',() => {
-            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
+        socket.on('user_leave_chatroom',(chatroom_url) => {
+            client.smembers('users_in_chatroom_' + chatroom_url, (err, reply)=>{
                 if(reply){
                     let old_user_list = reply.map((user) => {
                         return JSON.parse(user);
                     });
-                    console.log(old_user_list);
+                    // console.log(old_user_list);
                     let leave_user = old_user_list.filter((user)=>{
                         return user.userID == socket.session.passport.user.profile.id;
                     });
-                    console.log(JSON.stringify(leave_user[0]));
-                    client.lrem('users_in_chatroom', 0, JSON.stringify(leave_user[0]), (err,reply) =>{
+                    // console.log(JSON.stringify(leave_user[0]));
+                    client.srem('users_in_chatroom_' + chatroom_url, 0, JSON.stringify(leave_user[0]), (err,reply) =>{
                         if(reply){
-                            client.lrange('users_in_chatroom',0, -1, (err, reply)=>{
+                            client.smembers('users_in_chatroom_' + chatroom_url, (err, reply)=>{
                                 if(reply){
                                     let new_user_list = reply.map((user) => {
                                         return JSON.parse(user);
                                     });
-                                    io.emit('show_users_in_chatroom', new_user_list);
+                                    io.to("chatroom_" + chatroom_url).emit('show_users_in_chatroom', new_user_list);
                                 }
                             });
                         }
