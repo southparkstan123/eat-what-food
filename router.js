@@ -179,7 +179,65 @@ module.exports = (express) => {
             }).catch(err => console.log(err));
         });
     })
-    
+
+    router.get('/api/invite_user_list/:chatroom_id',isLoggedIn, (req,res) => {
+
+        ChatroomModel.findOne({
+            where : {
+                id : {
+                    [Op.eq]: req.params.chatroom_id
+                }
+            },
+            attributes : ['id', 'createdBy']
+        }).then((chatroom) => {
+            UserChatroomModel.findAll({
+                where: {
+                    userId : {
+                        [Op.ne]: chatroom.createdBy
+                    },
+                    chatroomId: {
+                        [Op.ne]: chatroom.id
+                    }
+                },
+            }).then((result) => {
+                console.log();
+                console.log(result);
+                UserModel.findAll({
+                    where: {
+                        facebookId: {
+                            [Op.ne]: req.user.profile.id
+                        }
+                    },
+                    attributes: ['id', 'facebookId', 'userName']
+                }).then(users =>{
+                    res.json(users);
+                }).catch(err => {
+                    console.log(err);
+                });
+            })
+        }).catch(err => {
+            console.log(err);
+        });
+    });
+
+    router.post('/api/invite_users/:chatroom_id',isLoggedIn, (req,res) => {
+
+        //All ids for invited user
+        let user_ids = req.body.users;
+
+        user_ids.forEach((user_id)=>{
+            UserChatroomModel.create({
+                userId: user_id,
+                chatroomId: req.params.chatroom_id,
+                isJoin: false
+            }).then((userChatroom)=>{
+                console.log(userChatroom);
+            }).catch((err) => {
+                console.log(err);
+            });
+        })
+    });
+
     router.get('*', (req, res) => {
         res.status(404).send('Page not found');
     });

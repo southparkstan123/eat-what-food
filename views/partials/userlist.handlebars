@@ -1,4 +1,5 @@
-<div id="chatroom-status" chatroom-url="{{chatroom.url}}"></div>
+{{chatroom.chatroomName}}
+<div id="chatroom-status" chatroom-id="{{chatroom.id}}" chatroom-url="{{chatroom.url}}"></div>
 <div id="chatroom-container" style="overflow-y:scroll; height:200px">
     <ul class="list-group" id="user-list">
     </ul>
@@ -17,20 +18,15 @@
             <h4 class="modal-title">Invite Users</h4>
             </div>
             <div class="modal-body">
-                <form id="">
+                <form id="invite-users">
                     <div class="form-group">
                     <label for="sel1">Select users to invite (hold shift to select more than one):</label>
-                    <select multiple class="form-control" id="sel2">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
+                    <select multiple class="form-control" id="users-to-be-invited">
+                        {{!-- Render user list here --}}
                     </select>
                     </div>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Invite</button>
+                    <button type="submit" class="btn btn-primary">Invite</button>
                 </form>
-            
             </div>
         </div>
       
@@ -76,10 +72,45 @@
             $('ul#user-list').append(html);
         });
 
+        //Return error message and redirect to lobby
         socket.on('error_message', (message) =>{
             alert(message);
             window.location.href = '/lobby';
-        })
+        });
+
+        $('#invite').click(() => {
+            $.get('/api/invite_user_list/' + $('#chatroom-status').attr('chatroom-id'))
+            .done((data) => {
+                console.log(data);
+                let html = '';
+                data.forEach((user) =>{
+                    html += `<option value="${user.id}">${user.userName}</option>`
+                });
+                $('#invite-users select').html(html);
+            });
+        });
+
+        $('#invite-users').submit((e) => {
+            e.preventDefault();
+
+            let ids = [];
+            $('#users-to-be-invited :selected').each(function(i, selected){
+                ids[i] = $(selected).val();
+            });
+            let data = {
+                users: ids
+            }
+            $.post('/api/invite_users/' + $('#chatroom-status').attr('chatroom-id'), data)
+                .done((response) =>{
+                    alert('Success to invite users!');
+                })
+                .fail((err) =>{
+                    console.log(err);
+                    alert(err);
+                }).always(() => {
+                    $('#myModal').modal('hide');
+                });
+        });
 
     });
 </script>

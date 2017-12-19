@@ -55,10 +55,6 @@ module.exports = (server)=>{
             });
         });
 
-        socket.on('invite_user_to_chatroom', (chatroom_url, user_list) => {
-
-        });
-
         socket.on('load_users_in_chatroom_from_redis', (chatroom_url) =>{
             client.smembers('users_in_chatroom_' + chatroom_url, (err, reply)=>{
                 if(reply){
