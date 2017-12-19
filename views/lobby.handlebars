@@ -1,0 +1,131 @@
+<div class="row">
+    <button class="btn btn-danger" id="logout">Logout</button>
+</div>
+<div class="row">
+    <h2>Create Group</h2>
+    <form id="create-group" class="form-inline">
+         <div class="form-group">
+            <input type="text" class="form-control" id="group-name" aria-describedby="groupHelp" placeholder="Enter group name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <small id="groupHelp" class="form-text text-muted">Group name is required and unique</small>
+    </form>
+</div>
+<div class="row">
+    <h2>Please Select Group</h2>
+    <h3>Created By User</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Chatroom Name</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+            <tbody id="chatroom-list-created-by-user">
+                {{!-- Render chatrooms here --}}
+            </tbody>
+        </thead>
+    </table>
+    <h3>Invited By Another User</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Chatroom Name</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+            <tbody id="chatroom-list-invited-by-another-user">
+                {{!-- Render chatrooms here --}}
+            </tbody>
+        </thead>
+    </table>
+</div>
+
+
+<script>
+    $(function(){
+
+        fetch_chatroom_list();
+
+        $('#create-group').submit((e)=>{
+            e.preventDefault();
+
+            $.post("/api/create_chatroom",{
+                chatroomName : $.trim($('#group-name').val())
+            }).done(function(data){
+                console.log(data);
+
+                let html = `<tr>
+                    <td>${data.chatroomName}</td>
+                    <td>${data.createdAt}</td>
+                    <td><button class="btn btn-success enter-chatroom" chatroom-url="${data.url}">Enter</button></td>
+                    </tr>`;
+                $('tbody#chatroom-list-created-by-user').append(html);
+                
+            }).fail(function(err){
+                console.log(err);
+            });
+        });
+
+        $("body").on("click", ".enter-chatroom",(e) => {
+            let chatroom_url = $(e.target).attr('chatroom-url');
+            console.log(chatroom_url);
+            socket.emit('user_enter_chatroom', chatroom_url);
+            window.location.href = '/chatroom/' + chatroom_url;
+        });
+
+        //Click the 'Leave chatroom' button to logout
+        $("#logout").click((e) => {
+            let isLogout = confirm('Are you sure to logout?');
+            if (isLogout == true) {
+                alert('See you again!');
+                socket.emit('user_logout');
+                window.location.href = '/logout';
+            }
+        });
+
+        socket.on('add_chatroom_list', (data) => {
+            console.log(data);
+            let html = `<tr>
+                <td>${data.chatroomName}</td>
+                <td>${data.createdAt}</td>
+                <td><button class="btn btn-success enter-chatroom" chatroom-url="${data.url}">Enter</button></td>
+                </tr>`;
+            $('tbody#chatroom-list-created-by-user').append(html);
+        });
+    });
+
+    function fetch_chatroom_list(){
+        $.ajax({
+            url:"/api/chatroom_list/",
+            type: "GET"
+        }).done(function(data){
+            console.log(data);
+            if(data.creates.length > 0){
+                let chatrooms_html = '';
+                data.creates.forEach((chatroom) => {
+                    chatrooms_html += `<tr>
+                        <td>${chatroom.chatroomName}</td>
+                        <td>${chatroom.createdAt}</td>
+                        <td><button class="btn btn-success enter-chatroom" chatroom-url="${chatroom.url}">Enter</button></td>
+                        </tr>`;
+                });
+                $('tbody#chatroom-list-created-by-user').html(chatrooms_html);
+            }
+            if(data.invited.length > 0){
+                let chatrooms_html = '';
+                console.log(data.invited);
+                data.invited.forEach((chatroom) => {
+                    chatrooms_html += `<tr>
+                        <td>${chatroom.chatroomName}</td>
+                        <td>${chatroom.createdAt}</td>
+                        <td><button class="btn btn-success enter-chatroom" chatroom-url="${chatroom.url}">Enter</button></td>
+                        </tr>`;
+                });
+                $('tbody#chatroom-list-invited-by-another-user').html(chatrooms_html);
+            }  
+        }).fail(function(err){
+            console.log(err);
+        });
+    }
+</script>
