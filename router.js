@@ -179,7 +179,72 @@ module.exports = (express) => {
             }).catch(err => console.log(err));
         });
     })
-    
+
+    router.get('/api/invite_user_list/:chatroom_url',isLoggedIn, (req,res) => {
+
+        ChatroomModel.findOne({
+            where : {
+                chatroom_url : {
+                    [Op.eq]: req.params.chatroom_url
+                }
+            },
+            attributes : ['id', 'createdBy']
+        }).then((chatroom) => {
+            UserModel.findAll({
+                where: {
+                    facebookId: {
+                        [Op.ne]: req.user.profile.id
+                    },
+                    id : {
+                        [Op.ne]: chatroom.createdBy
+                    }
+
+                },
+                attributes: ['id', 'facebookId', 'userName']
+            }).then(users =>{
+                res.json(users);
+            }).catch(err => {
+                console.log(err);
+            });
+        }).catch(() => {
+
+        });
+
+    });
+
+    router.post('/api/invite_users/:chatroom_id',isLoggedIn, (req,res) => {
+
+        //All ids for invited user
+        let user_ids = req.body.users;
+
+        user_ids.forEach((user_id)=>{
+            UserChatroomModel.create({
+                userId: user_id,
+                chatroomId: req.params.chatroom_id,
+                isJoin: false
+            }).then((userChatroom)=>{
+
+            }).catch((err) => {
+                console.log(err);
+            });
+        })
+
+
+
+        // UserModel.findAll({
+        //     where: {
+        //         facebookId: {
+        //             [Op.ne]: req.user.profile.id
+        //         }
+        //     },
+        //     attributes: ['id', 'facebookId', 'userName']
+        // }).then(users =>{
+        //     res.json(users);
+        // }).catch(err => {
+        //     console.log(err);
+        // });
+    });
+
     router.get('*', (req, res) => {
         res.status(404).send('Page not found');
     });
