@@ -48,7 +48,8 @@
             //console.log(data,'recieved from server');
             let list =""
             for(let i = 0;i<data.length;i++){
-                list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted}> ${data[i].date}
+                let date =moment.unix(data[i].date);
+                list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted}> ${date}
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
                     aria-valuemin="0" aria-valuemax="100" style="width:${data[i].percent_of_people}%">
