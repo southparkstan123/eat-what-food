@@ -79,7 +79,7 @@
         });
 
         $('#invite').click(() => {
-            $.get('/api/invite_user_list')
+            $.get('/api/invite_user_list/' + $('#chatroom-status').attr('chatroom-id'))
             .done((data) => {
                 console.log(data);
                 let html = '';
