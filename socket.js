@@ -5,8 +5,9 @@ const uuidv1 = require('uuid/v1');
 const ChatRoomModel = require('./models').chatrooms;
 const UserModel = require('./models').users;
 const UserChatroomModel = require('./models').userChatrooms;
-const sequelize = require('sequelize');
-const Op = sequelize.Op;
+const sequelize = require('./models').sequelize;
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 client.once('ready', function() {
     // Flush Redis DB
@@ -150,7 +151,80 @@ module.exports = (server)=>{
                 }
             });
         });
+
+        socket.on('date_created',(date)=>{
+            
+            //date = 1513672800
+            //
+            let data=[{
+                date:'testing date',
+                percent_of_people:60
+            },{
+                date:'testing date 2',
+                percent_of_people:50
+            }];
+            io.emit('date_table_updated',data)
+        });
+        
+        socket.on('date_vote_increase',()=>{
+
+            let data=[{
+                date:'testing date',
+                percent_of_people:60,
+                voted:'checked'
+            },{
+                date:'testing date 2',
+                percent_of_people:50,
+                voted:null
+            }];
+            data[0].percent_of_people +=10
+            io.emit('date_process_bar_increase',data)
+        });
+
+        socket.on('date_vote_decrease',()=>{
+            let data=[{
+                date:'testing date',
+                percent_of_people:60,
+                voted:'checked'
+            },{
+                date:'testing date 2',
+                percent_of_people:50,
+                voted:null
+            }];
+            data[0].percent_of_people -=10
+            io.emit('date_process_bar_increase',data)
+        })
+        socket.on('page_loaded',(chatroom_url)=>{
+            let findUserInfo =(chatroom_url)=>{ 
+                return new Promise((resolve,reject)=>{
+                    sequelize.query(`SELECT DISTINCT vd.date
+                    FROM chatrooms AS cr
+                    INNER JOIN "userChatrooms" AS uc on cr.id = uc."chatroomId"
+                    INNER JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id
+                    where cr.url = '${chatroom_url}';`,(err,results)=>{
+                        if(err){reject(err)}
+                        else {
+                            resolve(results.rows)};
+                    })
+                })
+            }
+            findUserInfo(chatroom_url).then((data)=>{
+                let output=[];
+                for(let i=0;i<data.length;i++){
+                    output.push({
+                        date: data[i].date
+                    })
+                }
+                console.log(output);
+                io.emit('date_table_updated',output);
+            });
+        })
     });
 
+    io.on('send_message',(socket)=>{
+        socket.emit('print_message',socket.session.passport.user);
+    })
+
+    
     return io;
 }
