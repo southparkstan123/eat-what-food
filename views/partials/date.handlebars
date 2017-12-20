@@ -27,11 +27,17 @@
         let date = $('#datetimepicker1').datetimepicker();
         $('#datetimepicker1').data("DateTimePicker").ignoreReadonly(true);
 
-        socket.emit('page_loaded');
+        socket.emit('page_loaded', $('#chatroom-status').attr('chatroom-url'));
 
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
-                socket.emit('date_created',(moment($('#new_date').val())).unix());
+
+                let data = {
+                    chatroom_url : $('#chatroom-status').attr('chatroom-url'),
+                    date : moment($('#new_date').val()).unix()
+                }
+                console.log(data);
+                socket.emit('date_created', data);
             }else{
                 alert('Invalid date');
             }

@@ -1,7 +1,9 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var userChatroom = sequelize.define('userChatrooms', {
-    userId: DataTypes.INTEGER
+    userId: DataTypes.INTEGER,
+    isJoin: DataTypes.BOOLEAN,
+    chatroomId: DataTypes.INTEGER,
   });
 
   userChatroom.associate = function (models) {
