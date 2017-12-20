@@ -41,6 +41,7 @@
             //Emit 'send_message' event
             console.log($.trim($('#message').val()));
             socket.emit('send_message', $('#chatroom-status').attr('chatroom-url'), $.trim($('#message').val()));
+            $('#message').val('');
         });
 
         //Display message from server side
@@ -48,7 +49,6 @@
             console.log(data);
             let html = `<span class="message-time">${moment(data.date).format('LTS')}</span><div class="well"><strong>${data.username}</strong> : <p>${data.content}</p></div>`;
             $('#message-list').append(html);
-            $('#message').val('');
             $('#message-list').animate({ scrollTop: $('#message-list').prop("scrollHeight")}, 1000);
         });
 
