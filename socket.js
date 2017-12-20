@@ -125,8 +125,6 @@ module.exports = (server)=>{
             });
         });
 
-<<<<<<< HEAD
-=======
         socket.on('user_leave_chatroom',(chatroom_url) => {
             client.smembers('users_in_chatroom_' + chatroom_url, (err, reply)=>{
                 if(reply){
@@ -155,7 +153,6 @@ module.exports = (server)=>{
         });
 
         socket.on('date_created',(date)=>{
->>>>>>> develop
             
             //date = 1513672800
             //

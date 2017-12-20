@@ -59,7 +59,7 @@ module.exports = {
               });
           }
         }
-        return queryInterface.bulkInsert('userChatrooms', userChatroomArr);
+        return queryInterface.bulkInsert('userChatrooms', userChatroomArr, {returning:true}).then() ;
         //console.log(userChatroomArr);
       });
     });
