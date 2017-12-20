@@ -30,8 +30,13 @@
     "pg": "^7.4.0",
     "pg-hstore": "^2.3.2",
     "redis": "^2.8.0",
+    "selenium-webdriver": "^3.6.0",
     "sequelize": "^4.28.0",
     "socket.io": "^2.0.4",
-    "socket.io.session": "^1.0.13"
+    "socket.io.session": "^1.0.13",
+    "webdriverio": "^4.9.11"
+  },
+  "devDependencies": {
+    "wdio-jasmine-framework": "^0.3.2"
   }
 }
