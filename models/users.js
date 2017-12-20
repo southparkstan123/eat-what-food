@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     users.hasMany(models.chatrooms, {
       foreignKey: "createdBy", sourceKey: "id", as: "creates"
     })
-    users.hasMany(models.userChatrooms, {
-      foreignKey: "userId", sourceKey: "id", as: "invited"
+    users.belongsToMany(models.chatrooms, {
+      foreignKey: "userId", sourceKey: "id", as: "invited", through: models.userChatrooms
     })
   }
 
