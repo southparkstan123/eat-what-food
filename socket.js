@@ -62,17 +62,13 @@ module.exports = (server)=>{
         });
         socket.on('date_vote_increase',()=>{
 
-            let data=[{
-                date:'testing date',
-                percent_of_people:60,
-                voted:'checked'
-            },{
-                date:'testing date 2',
-                percent_of_people:50,
-                voted:null
-            }];
-            data[0].percent_of_people +=10
-            io.emit('date_process_bar_increase',data)
+            
+            //update db here
+
+            //get data from db here and output to front-end
+
+            let output=[];
+            io.emit('date_table_updated',output)
         })
         socket.on('date_vote_decrease',()=>{
             let data=[{
@@ -85,33 +81,75 @@ module.exports = (server)=>{
                 voted:null
             }];
             data[0].percent_of_people -=10
-            io.emit('date_process_bar_increase',data)
+            io.emit('date_table_updated',data)
         })
         socket.on('page_loaded',()=>{
             let chat_url ='abc123';
-            let findUserInfo =(chat_url)=>{ 
+            let user_fb_id =223456789;
+
+            // let find_all_date =(chat_url)=>{ 
+            //     return new Promise((resolve,reject)=>{
+            //         client.query(`SELECT DISTINCT vd.date
+            //         FROM chatrooms AS cr
+            //         INNER JOIN "userChatrooms" AS uc on cr.id = uc."chatroomId"
+            //         INNER JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id
+            //         where cr.url = '${chat_url}';`,(err,results)=>{
+            //             if(err){reject(err)}
+            //             else {resolve(results.rows)};
+            //         })
+            //     })
+            // }
+            let find_number_of_ppl_voted=(chat_url)=>{
                 return new Promise((resolve,reject)=>{
-                    client.query(`SELECT DISTINCT vd.date
+                    client.query(`SELECT vd.date, COUNT(vd.date)
                     FROM chatrooms AS cr
                     INNER JOIN "userChatrooms" AS uc on cr.id = uc."chatroomId"
                     INNER JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id
-                    where cr.url = '${chat_url}';`,(err,results)=>{
+                    where cr.url = '${chat_url}'
+                    GROUP BY vd.date;`,(err,results)=>{
                         if(err){reject(err)}
-                        else {
-                            resolve(results.rows)};
+                        else{resolve(results.rows)}
                     })
                 })
             }
-            findUserInfo(chat_url).then((data)=>{
-                let output=[];
-                for(let i=0;i<data.length;i++){
-                    output.push({
-                        date: data[i].date
+            let find_user_voted_which_date=(user_fb_id)=>{
+                return new Promise((resolve,reject)=>{
+                    client.query(`SELECT u.id, u."userName", vd.date, cr.url, u."facebookId" FROM users as u
+                    INNER JOIN "userChatrooms" AS uc on u.id = uc."userId"
+                    INNER JOIN "chatrooms" AS cr on cr.id = uc."chatroomId"
+                    LEFT JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id
+                    where u."facebookId" = '${user_fb_id}';`,(err,results)=>{
+                        if(err){reject(err)}
+                        else{resolve(results.rows)}
                     })
-                }
-                console.log(output);
-                io.emit('date_table_updated',output);
-            });
+                })
+            }
+
+            Promise.all([find_number_of_ppl_voted(chat_url),find_user_voted_which_date(user_fb_id)])
+            .then((values) =>{
+                console.log(value);
+                let obj=[]
+                for(let i=0;i<values;i++){}
+            })
+            .catch(err => console.log(err));
+
+            // find_user_voted_which_date(user_fb_id).then((data)=>{
+            //     console.log(data);
+            // })
+
+            // find_number_of_ppl_voted(chat_url).then((data)=>{
+            //     //console.log(data);
+            //     let output=[];
+            //     let total_number_of_ppl =10;
+            //     for(let i=0;i<data.length;i++){
+            //         output.push({
+            //             date:data[i].date,
+            //             percent_of_people:(parseInt(data[i].count))/total_number_of_ppl*100
+            //         })
+            //     }
+            //     io.emit('date_table_updated',output);
+            // })
+            
         })
     });
 
