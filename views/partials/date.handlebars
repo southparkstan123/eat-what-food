@@ -47,12 +47,14 @@
             if($(this).prop('checked')==true){
                 socket.emit('date_vote_increase',($(this).data('id'),$('#chatroom-status').attr('chatroom-id'))) //unique name for date vote
             }else if($(this).prop('checked') == false){
-                socket.emit('date_vote_decrease',($(this).data('id'),$('#chatroom-status').attr('chatroom-id'))))
+                socket.emit('date_vote_decrease',($(this).data('id'),$('#chatroom-status').attr('chatroom-id')))
             }
         })
 
         socket.on('date_table_updated',(data)=>{
             //render table here;
+
+            console.log(data);
             let list =""
             for(let i = 0;i<data.length;i++){
                 let date =moment.unix(data[i].date);
