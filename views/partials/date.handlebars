@@ -42,7 +42,7 @@
                 alert('Invalid date');
             }
         })
-        $('.poll').on('click','.date_poll', function(){
+        $('.poll').on('click','.date_poll', ()=>{
             //add data-id = db primary key + $(this).data('id')
             if($(this).prop('checked')==true){
                 socket.emit('date_vote_increase',($(this).data('id'),$('#chatroom-status').attr('chatroom-id'))) //unique name for date vote
