@@ -49,6 +49,7 @@
             if($(e.target).prop('checked')==true){
                 socket.emit('date_vote_increase',data)
             }else if($(e.target).prop('checked') == false){
+                console.log("$(e.target).prop('checked')", $(e.target).prop('checked'));
                 socket.emit('date_vote_decrease',data)
             }
         })

@@ -7,7 +7,7 @@ const ChatRoomModel = require('./models').chatroom;
 const UserModel = require('./models').user;
 const UserChatroomModel = require('./models').userChatroom;
 const DateModel = require('./models').date;
-const VoteDateModel = require('./models').voteDate;
+const VoteDateModel = require('./models').voteDates;
 
 
 const sequelize = require('./models').sequelize;
@@ -226,7 +226,7 @@ module.exports = (server) => {
                 }).then((userChatroom) => {
 
                     VoteDateModel.create({
-                        date: data.date,
+                        dateId: data.checkbox_id,
                         userChatroomId: userChatroom.id
                     }).then(voteDate => {
                         updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
@@ -236,7 +236,7 @@ module.exports = (server) => {
             }).catch(err => console.log(err));
         });
 
-        socket.on('date_vote_decrease', (pk, chatroom_url) => {
+        socket.on('date_vote_decrease', (data) => {
             UserModel.findOne({
                 where: {
                     facebookId: {
@@ -257,8 +257,10 @@ module.exports = (server) => {
                     attributes: ['id']
                 }).then((userChatroom) => {
                     VoteDateModel.destroy({
-                        date: data.date,
-                        userChatroomId: userChatroom.id
+                        where:{
+                            dateId: data.checkbox_id,
+                            userChatroomId: userChatroom.id
+                        }
                     }).then(voteDate => {
                         updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
                     }).catch(err => console.log(err));

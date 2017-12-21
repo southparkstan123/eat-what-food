@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   dates.associate = function (models) {
     // associations can be defined here
     dates.belongsToMany(models.userChatroom, {
-      foreignKey: "dateId", sourceKey: "id", through: models.voteDate
+      foreignKey: "dateId", sourceKey: "id", through: models.voteDates
     })
     dates.belongsTo(models.chatroom, {
       foreignKey: "id", sourceKey: "chatroomId"
