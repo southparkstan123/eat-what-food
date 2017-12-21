@@ -198,7 +198,7 @@ module.exports = (server) => {
                                         percent_of_people: (parseInt(voteData[i].count)) / total_number_of_ppl * 100
                                     })
                                 }
-                                io.emit('date_table_updated', output);
+                                io.to("chatroom_" + chatroom_url)('date_table_updated', output);
                             }).catch((err) => {
                                 console.log(err);
                             })
@@ -208,19 +208,17 @@ module.exports = (server) => {
             }).catch(err => console.log(err));
         });
 
-        socket.on('date_vote_increase', () => {
+        socket.on('date_vote_increase', (pk,chatroom_url) => {
+            const user_fb_id = socket.session.passport.user.profile.id;
 
 
-            //update db here
-
-            //get data from db here and output to front-end
 
             let output = [];
-            io.emit('date_table_updated', output)
+            io.to("chatroom_" + chatroom_url).emit('date_table_updated', output)
         })
-        socket.on('date_vote_decrease', () => {
+        socket.on('date_vote_decrease', (pk,chatroom_url) => {
 
-            io.emit('date_table_updated', data)
+            io.to("chatroom_" + chatroom_url).emit('date_table_updated', data)
         })
         socket.on('page_loaded', (chatroom_url) => {
 
@@ -244,7 +242,7 @@ module.exports = (server) => {
                                 percent_of_people: (parseInt(voteData[i].count)) / total_number_of_ppl * 100
                             })
                         }
-                        io.emit('date_table_updated', output);
+                        io.to("chatroom_" + chatroom_url).emit('date_table_updated', output);
                     }).catch((err) => {
                         console.log(err);
                     })

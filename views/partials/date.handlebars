@@ -1,8 +1,8 @@
-<div>
+<div >
     Choose Any Date
-    <div class='poll'>
+    <div class='poll' style="height:200px; overflow-y:scroll">
         <ul id ="date_list" style ='list-style-type:none;padding:0px'>
-            <li><input type='checkbox' class='date_poll'> Date:
+            <li><input type='checkbox' class='date_poll'> Date: 
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
                     aria-valuemin="0" aria-valuemax="100" style="width:60%">
@@ -27,13 +27,13 @@
         let date = $('#datetimepicker1').datetimepicker();
         $('#datetimepicker1').data("DateTimePicker").ignoreReadonly(true);
 
-        socket.emit('page_loaded', $('#chatroom-status').attr('chatroom-url'));
+        socket.emit('page_loaded', $('#chatroom-status').attr('chatroom-id'));
 
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
 
                 let data = {
-                    chatroom_url : $('#chatroom-status').attr('chatroom-url'),
+                    chatroom_id : $('#chatroom-status').attr('chatroom-id'),
                     date : moment($('#new_date').val()).unix()
                 }
                 console.log(data);
@@ -42,20 +42,21 @@
                 alert('Invalid date');
             }
         })
-        $('.poll').on('click','.date_poll', function(){
+        $('.poll').on('click','.date_poll', ()=>{
+            //add data-id = db primary key + $(this).data('id')
             if($(this).prop('checked')==true){
-                socket.emit('date_vote_increase') //unique name for date vote
+                socket.emit('date_vote_increase',($(this).data('id'),$('#chatroom-status').attr('chatroom-id'))) //unique name for date vote
             }else if($(this).prop('checked') == false){
-                socket.emit('date_vote_decrease')
+                socket.emit('date_vote_decrease',($(this).data('id'),$('#chatroom-status').attr('chatroom-id'))))
             }
         })
 
         socket.on('date_table_updated',(data)=>{
-            //console.log(data,'recieved from server');
+            //render table here;
             let list =""
             for(let i = 0;i<data.length;i++){
                 let date =moment.unix(data[i].date);
-                list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted}> ${date}
+                list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted} data-id=${data[i].pk}> ${date}
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
                     aria-valuemin="0" aria-valuemax="100" style="width:${data[i].percent_of_people}%">
