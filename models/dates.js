@@ -1,7 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var dates = sequelize.define('date', {
-    date: DataTypes.INTEGER
+    date: DataTypes.INTEGER,
+    chatroomId: DataTypes.INTEGER,
   });
 
   dates.associate = function (models) {

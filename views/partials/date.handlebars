@@ -23,7 +23,7 @@
         let date = $('#datetimepicker1').datetimepicker();
         $('#datetimepicker1').data("DateTimePicker").ignoreReadonly(true);
 
-        socket.emit('page_loaded', $('#chatroom-status').attr('chatroom-id'));
+        initialize();
 
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
@@ -71,6 +71,14 @@
             alert(message);
         })
     });
+function initialize(){
 
+    console.log($('#chatroom-status').attr('chatroom-id'));
+    let data ={
+        chatroom_id : $('#chatroom-status').attr('chatroom-id'),
+        chatroom_url : $('#chatroom-status').attr('chatroom-url')
+    }
+    socket.emit('page_loaded', data);
+}
 </script>
 
