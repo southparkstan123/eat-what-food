@@ -1,0 +1,13 @@
+body {
+    background-color: #6b7a8f;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#login-container{
+    background-image:url("../images/restaurant.png");
+    background-size: 100%;
+    max-width:100%;
+    max-height: 100%;
+    height: 100%;
+    background-position: auto
+}
