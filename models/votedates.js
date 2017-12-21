@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     voteDates.belongsTo(models.userChatrooms, {
       foreignKey: "id", sourceKey: "userChatroomId"
     })
+    voteDates.belongsTo(models.dates, {
+      foreignKey: "id", sourceKey: "date"
+    })
   }
 
   return voteDates;
