@@ -3,22 +3,23 @@ body {
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-/*#login-container{
-    background-image:url("../images/restaurant.png");
-    background-size: 100%;
-    max-width:100%;
-    min-height: 100%;
-    height: 100%;
-    background-position: auto;
-
-}*/
-
 #login-header{
     background-image:url("../images/restaurant.png");
-    background-size: 100%;
+    background-size: cover;
     max-width:100%;
     min-height: 100%;
-    height: 100%;
-    background-position: auto;
+    height: 100vh;
+    /*background-position: auto;*/
+    /* margin-top: -20px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+#login-container {
+    text-align: center;
+} 
+
+#login-title {
+    color: #ffffff;
 }
