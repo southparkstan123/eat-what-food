@@ -187,10 +187,10 @@ module.exports = (server) => {
                             date: data.date,
                         },
                         defaults: {
+                            date: data.date,
                             chatroomId: data.chatroom_id
                         }
-                    }).spread((date, created) => {
-                        console.log(date);
+                    }).spread((d, created) => {
                         if (created) {
                             //Update vote date result
                             updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
@@ -265,7 +265,6 @@ module.exports = (server) => {
                 }).catch(err => console.log(err));
             }).catch(err => console.log(err));
 
-            io.to("chatroom_" + chatroom_url).emit('date_table_updated', data)
         })
         socket.on('page_loaded', (data) => {
             UserModel.findOne({
@@ -332,7 +331,7 @@ function updateVoteDateResult(io, chatroomId, chatroomUrl, userChatroomId) {
                     output.push({
                         date:voteData[i].date,
                         num_of_ppl:voteData[i].totalVote,
-                        voted:'checked',
+                        voted:null,
                         id:voteData[i].id
                     })
                 }
