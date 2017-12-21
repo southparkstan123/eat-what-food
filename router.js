@@ -3,9 +3,9 @@ const app = express();
 const http = require('http').Server(app);
 const passport = require('passport');
 const client = require('./database');
-const UserModel = require('./models').users;
-const ChatroomModel = require('./models').chatrooms;
-const UserChatroomModel = require('./models').userChatrooms;
+const UserModel = require('./models').user;
+const ChatroomModel = require('./models').chatroom;
+const UserChatroomModel = require('./models').userChatroom;
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 const uuidv1 = require('uuid/v1');
@@ -119,7 +119,6 @@ module.exports = (express) => {
                 },
             ]
         }).then((user) => {
-
             let result = {};
 
             result.id = user.id;
@@ -132,7 +131,7 @@ module.exports = (express) => {
             });
 
             result.invited = user.invited.filter(chatroom => {
-                return chatroom.createdBy !== chatroom.userChatrooms.userId;
+                return chatroom.createdBy !== user.id;
             }).sort((a,b) => {
                 return a.createdAt - b.createdAt;
             });

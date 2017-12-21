@@ -1,19 +1,17 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var dates = sequelize.define('dates', {
+  var dates = sequelize.define('date', {
     date: DataTypes.INTEGER
-  }, {
-      classMethods: {
-        associate: function (models) {
-          // associations can be defined here
-          dates.hasMany(models.voteDates, {
-            foreignKey: "dateId", sourceKey: "id"
-          })
-          dates.belongsTo(models.chatrooms, {
-            foreignKey: "id", sourceKey: "chatroomId"
-          })
-        }
-      }
-    });
+  });
+
+  dates.associate = function (models) {
+    // associations can be defined here
+    dates.belongsToMany(models.userChatroom, {
+      foreignKey: "dateId", sourceKey: "id", through: models.voteDate
+    })
+    dates.belongsTo(models.chatroom, {
+      foreignKey: "id", sourceKey: "chatroomId"
+    })
+  }
   return dates;
 };

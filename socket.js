@@ -2,10 +2,14 @@ const session = require("./session");
 const socketIOSession = require("socket.io.session");
 const client = require('./database');
 const uuidv1 = require('uuid/v1');
-const ChatRoomModel = require('./models').chatrooms;
-const UserModel = require('./models').users;
-const UserChatroomModel = require('./models').userChatrooms;
-const VoteDatesModel = require('./models').voteDates;
+
+const ChatRoomModel = require('./models').chatroom;
+const UserModel = require('./models').user;
+const UserChatroomModel = require('./models').userChatroom;
+const DateModel = require('./models').date;
+const VoteDateModel = require('./models').voteDate;
+
+
 const sequelize = require('./models').sequelize;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
@@ -156,55 +160,68 @@ module.exports = (server) => {
         });
 
         socket.on('date_created', (data) => {
-            const user_fb_id = socket.session.passport.user.profile.id;
+            // const user_fb_id = socket.session.passport.user.profile.id;
             //update db
             console.log(data);
 
-            UserModel.findOne({
-                where: {
-                    facebookId: {
-                        [Op.eq]: socket.session.passport.user.profile.id
-                    }
-                },
-                include: {
-                    model: ChatRoomModel,
-                    as: 'invited',
-                    where: {
-                        url: {
-                            [Op.eq]: data.chatroom_url
+            DateModel.create({
+                date: data.date,
+                chatroomId : data.chatroom_id
+            }).then((date) => {
+                DateModel.findAll({
+                    where : {
+                        chatroomId : {
+                            [Op.eq] : data.chatroom_id
                         }
                     }
-                }
-            }).then((user) => {
-                //create a record to voteDates table
-                VoteDatesModel.create({
-                    date: data.date,
-                    userChatroomId: user.invited[0].userChatrooms.id,
-                }).then((voteDates) => {
-                    let find_number_of_ppl_voted = (chatroom_url) => {
-                        sequelize.query(`SELECT vd.date, COUNT(vd.date) 
-                                    FROM chatrooms AS cr 
-                                    INNER JOIN "userChatrooms" AS uc on cr.id = uc."chatroomId" 
-                                    INNER JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id 
-                                    where cr.url = :chatroomURL 
-                                    GROUP BY vd.date `,
-                            { replacements: { chatroomURL: chatroom_url }, type: sequelize.QueryTypes.SELECT })
-                            .then((voteData) => {
-                                let output = [];
-                                let total_number_of_ppl = 20;
-                                for (let i = 0; i < voteData.length; i++) {
-                                    output.push({
-                                        date: voteData[i].date,
-                                        percent_of_people: (parseInt(voteData[i].count)) / total_number_of_ppl * 100
-                                    })
-                                }
-                                io.to("chatroom_" + chatroom_url)('date_table_updated', output);
-                            }).catch((err) => {
-                                console.log(err);
-                            })
-                    }
-                    find_number_of_ppl_voted(data.chatroom_url);
-                })
+                }).then((result) => {
+                    io.emit('date_table_updated', result);
+                }).catch(err => console.log(err));
+            // UserModel.findOne({
+            //     where: {
+            //         facebookId: {
+            //             [Op.eq]: socket.session.passport.user.profile.id
+            //         }
+            //     },
+            //     include: {
+            //         model: ChatRoomModel,
+            //         as: 'invited',
+            //         where: {
+            //             url: {
+            //                 [Op.eq]: data.chatroom_url
+            //             }
+            //         }
+            //     }
+            // }).then((user) => {
+            //     //create a record to voteDates table
+            //     VoteDatesModel.create({
+            //         date: data.date,
+            //         userChatroomId: user.invited[0].userChatrooms.id,
+            //     }).then((voteDates) => {
+            //         let find_number_of_ppl_voted = (chatroom_url) => {
+            //             sequelize.query(`SELECT vd.date, COUNT(vd.date) 
+            //                         FROM chatrooms AS cr 
+            //                         INNER JOIN "userChatrooms" AS uc on cr.id = uc."chatroomId" 
+            //                         INNER JOIN "voteDates" AS vd on vd."userChatroomId" = uc.id 
+            //                         where cr.url = :chatroomURL 
+            //                         GROUP BY vd.date `,
+            //                 { replacements: { chatroomURL: chatroom_url }, type: sequelize.QueryTypes.SELECT })
+            //                 .then((voteData) => {
+            //                     let output = [];
+            //                     let total_number_of_ppl = 20;
+            //                     for (let i = 0; i < voteData.length; i++) {
+            //                         output.push({
+            //                             date: voteData[i].date,
+            //                             percent_of_people: (parseInt(voteData[i].count)) / total_number_of_ppl * 100
+            //                         })
+            //                     }
+            //                     io.emit('date_table_updated', output);
+            //                 }).catch((err) => {
+            //                     console.log(err);
+            //                 })
+            //         }
+            //         find_number_of_ppl_voted(data.chatroom_url);
+            //     })
             }).catch(err => console.log(err));
         });
 

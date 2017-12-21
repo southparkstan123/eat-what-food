@@ -6,8 +6,11 @@ module.exports = (sequelize, DataTypes) => {
 
   food.associate = function (models) {
     // associations can be defined here
-    food.hasMany(models.voteFoods, {
-      foreignKey: "foodId", sourceKey: "id"
+    food.belongsToMany(models.userChatroom, {
+      foreignKey: "foodId", sourceKey: "id", through: models.voteFood
+    })
+    food.belongsTo(models.chatroom, {
+      foreignKey: "id", sourceKey: "chatroomId"
     })
   }
 

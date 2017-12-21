@@ -1,18 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var voteLocation = sequelize.define('voteLocations', {
+  var voteLocation = sequelize.define('voteLocation', {
     locationId: DataTypes.INTEGER
   });
-
-  voteLocation.associate = function (models) {
-    // associations can be defined here
-    voteLocation.belongsTo(models.userChatrooms, {
-      foreignKey: "id", sourceKey: "userChatroomId"
-    })
-    voteLocation.belongsTo(models.locations, {
-      foreignKey: "id", sourceKey: "locationId"
-    })
-  }
 
   return voteLocation;
 };
