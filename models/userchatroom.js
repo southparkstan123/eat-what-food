@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var userChatroom = sequelize.define('userChatrooms', {
+  var userChatroom = sequelize.define('userChatroom', {
     userId: DataTypes.INTEGER,
     isJoin: DataTypes.BOOLEAN,
     chatroomId: DataTypes.INTEGER,
@@ -8,20 +8,14 @@ module.exports = (sequelize, DataTypes) => {
 
   userChatroom.associate = function (models) {
     // associations can be defined here
-    userChatroom.belongsTo(models.users, {
-      foreignKey: "id", sourceKey: "userId"
+    userChatroom.belongsToMany(models.date, {
+      foreignKey: "userChatroomId", sourceKey: "id", through: models.voteDate
     })
-    userChatroom.hasMany(models.voteLocations, {
-      foreignKey: "userChatroomId", sourceKey: "id"
+    userChatroom.belongsToMany(models.food, {
+      foreignKey: "userChatroomId", sourceKey: "id", through: models.voteFood
     })
-    userChatroom.belongsTo(models.chatrooms, {
-      foreignKey: "id", sourceKey: "chatroomId"
-    })
-    userChatroom.hasMany(models.voteFoods, {
-      foreignKey: "userChatroomId", sourceKey: "id"
-    })
-    userChatroom.hasMany(models.voteDates, {
-      foreignKey: "userChatroomId", sourceKey: "id"
+    userChatroom.belongsToMany(models.location, {
+      foreignKey: "userChatroomId", sourceKey: "id", through: models.voteLocation
     })
   }
 
