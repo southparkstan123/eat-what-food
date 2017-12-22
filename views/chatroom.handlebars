@@ -1,7 +1,7 @@
 <div class="col-md-4">
     {{> userlist }}
 </div>
-<div class="col-md-6">
+<div class="col-md-4">
     <div class="row">
         <div id="message-list" style="height:500px; overflow-y:scroll">
     </div>
@@ -15,7 +15,7 @@
     </form>
     </div>
 </div>
-<div class="col-md-2">
+<div class="col-md-4">
     <div class="row">
         {{> date }}
     </div>
@@ -39,13 +39,11 @@
             e.preventDefault();
 
             //Emit 'send_message' event
-            console.log($.trim($('#message').val()));
             socket.emit('send_message', $('#chatroom-status').attr('chatroom-url'), $.trim($('#message').val()));
         });
 
         //Display message from server side
         socket.on('display_sent_message', (data) => {
-            console.log(data);
             let html = `<span class="message-time">${moment(data.date).format('LTS')}</span><div class="well"><strong>${data.username}</strong> : <p>${data.content}</p></div>`;
             $('#message-list').append(html);
             $('#message').val('');

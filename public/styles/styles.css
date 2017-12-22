@@ -1,0 +1,40 @@
+body {
+    background-color: #6b7a8f;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#login-header{
+    background-image:url("../images/restaurant.png");
+    background-size: cover;
+    max-width:100%;
+    min-height: 100%;
+    height: 100vh;
+    /*background-position: auto;*/
+    /* margin-top: -20px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#login-container {
+    text-align: center;
+} 
+
+#login-title {
+    color: #ffffff;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd){
+    background-color: #b195f1;
+}
+
+@media (min-width: 768px){
+    .navbar {
+        border-radius: 0;
+    }
+}
+
+#logout{
+    margin-left: 10px;
+    margin-right: 10px;
+}
