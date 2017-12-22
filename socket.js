@@ -7,7 +7,7 @@ const ChatRoomModel = require('./models').chatroom;
 const UserModel = require('./models').user;
 const UserChatroomModel = require('./models').userChatroom;
 const DateModel = require('./models').date;
-const VoteDateModel = require('./models').voteDate;
+const VoteDateModel = require('./models').voteDates;
 
 
 const sequelize = require('./models').sequelize;
@@ -17,7 +17,6 @@ const Op = Sequelize.Op;
 client.once('ready', function () {
     // Flush Redis DB
     client.flushdb();
-
 });
 
 module.exports = (server) => {
@@ -168,6 +167,8 @@ module.exports = (server) => {
                 },
                 attributes: ['id']
             }).then(user => {
+                console.log(user.id);
+                console.log(data.chatroom_id);
                 UserChatroomModel.findOne({
                     where: {
                         userId: {
@@ -175,10 +176,11 @@ module.exports = (server) => {
                         },
                         chatroomId: {
                             [Op.eq]: data.chatroom_id
-                        },
+                        }
                     },
                     attributes: ['id']
                 }).then(userChatroom => {
+                    console.log(userChatroom);
                     DateModel.findOrCreate({
                         where: {
                             date: data.date,
@@ -187,32 +189,17 @@ module.exports = (server) => {
                             date: data.date,
                             chatroomId: data.chatroom_id
                         }
-                    }).spread((date, created) => {
+                    }).spread((d, created) => {
                         if (created) {
                             //Update vote date result
                             updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
-
-                            // let query = `SELECT d."id", 
-                            // COUNT(vd.id) AS "totalVote", 
-                            // (SELECT COUNT(*) FROM "voteDates" AS vd2 WHERE vd2."userChatroomId" = :userChatroomId AND vd2."dateId" = d.id) AS "userVote",
-                            // d.date
-                            // FROM dates AS d
-                            // LEFT JOIN "voteDates" AS vd ON d.id = vd."dateId"
-                            // where d."chatroomId" = :chatroomId group by d.id`;
-
-                            // sequelize.query(query,{ 
-                            //     replacements: { 
-                            //         chatroomId: data.chatroom_id,
-                            //         userChatroomId: userChatroom.id
-                            //     }, type: sequelize.QueryTypes.SELECT 
-                            // }).then((voteData) => {
-                            //     io.emit('date_table_updated', vote);
-                            // }).catch(err => console.log(err));
                         } else {
                             io.emit('error_message_for_date', 'This date is already existed!');
                         }
-                    }).catch(err => console.log(err));
-                })
+                    }).catch(err => {
+                        console.log(err)
+                    });
+                }).catch(err => console.log(err));
             })
         });
 
@@ -238,7 +225,7 @@ module.exports = (server) => {
                 }).then((userChatroom) => {
 
                     VoteDateModel.create({
-                        date: data.date,
+                        dateId: data.checkbox_id,
                         userChatroomId: userChatroom.id
                     }).then(voteDate => {
                         updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
@@ -248,7 +235,7 @@ module.exports = (server) => {
             }).catch(err => console.log(err));
         });
 
-        socket.on('date_vote_decrease', (pk, chatroom_url) => {
+        socket.on('date_vote_decrease', (data) => {
             UserModel.findOne({
                 where: {
                     facebookId: {
@@ -269,15 +256,16 @@ module.exports = (server) => {
                     attributes: ['id']
                 }).then((userChatroom) => {
                     VoteDateModel.destroy({
-                        date: data.date,
-                        userChatroomId: userChatroom.id
+                        where:{
+                            dateId: data.checkbox_id,
+                            userChatroomId: userChatroom.id
+                        }
                     }).then(voteDate => {
                         updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
                     }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
             }).catch(err => console.log(err));
 
-            io.to("chatroom_" + chatroom_url).emit('date_table_updated', data)
         })
         socket.on('page_loaded', (data) => {
             UserModel.findOne({
@@ -300,6 +288,7 @@ module.exports = (server) => {
                     attributes: ['id']
                 }).then((userChatroom) => {
                     //Update vote date result
+                    console.log(userChatroom);
                     updateVoteDateResult(io, data.chatroom_id, data.chatroom_url, userChatroom.id);
                 }).catch(err => console.log(err));
             }).catch(err => console.log(err));
@@ -329,7 +318,26 @@ function updateVoteDateResult(io, chatroomId, chatroomUrl, userChatroomId) {
                 userChatroomId: userChatroomId
             }, type: sequelize.QueryTypes.SELECT
         }).then((voteData) => {
-            io.to("chatroom_" + chatroomUrl).emit('date_table_updated', voteData);
+            let output =[];
+            for(let i =0;i<voteData.length;i++){
+                if(voteData[i].userVote != 0){
+                    output.push({
+                        date:voteData[i].date,
+                        num_of_ppl:voteData[i].totalVote,
+                        voted:'checked',
+                        id:voteData[i].id
+                    })
+                }
+                else if(voteData[i].userVote ==0){
+                    output.push({
+                        date:voteData[i].date,
+                        num_of_ppl:voteData[i].totalVote,
+                        voted:null,
+                        id:voteData[i].id
+                    })
+                }
+            }
+            io.to("chatroom_" + chatroomUrl).emit('date_table_updated', output);
         }).catch(err => console.log(err));
     }
 

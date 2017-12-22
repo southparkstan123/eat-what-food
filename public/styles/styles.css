@@ -1,5 +1,5 @@
 body {
-    background-color: #6b7a8f;
+    background-color: #e0e0e0;
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
@@ -37,4 +37,11 @@ body {
 #logout{
     margin-left: 10px;
     margin-right: 10px;
+}
+#chatroom-name {
+    color: rgb(182, 0, 0);
+    
+}
+.poll li{
+    padding: 4px 0;
 }
