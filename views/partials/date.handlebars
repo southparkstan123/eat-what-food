@@ -1,6 +1,6 @@
 <div >
     Choose Any Date
-    <div class='poll' style="height:200px; overflow-y:scroll">
+    <div class='poll' style="height:200px; overflow-y:auto">
         <ul id ="date_list" style ='list-style-type:none;padding:0px'>
             <li><input type='checkbox' class='date_poll'> Date: 
                 rendering...
@@ -14,7 +14,7 @@
                 <span class="glyphicon glyphicon-calendar"></span>
             </span>
         </div>
-        <button type='button' id='add_date'>+</button>
+        <button type='button' id='add_date' class="btn">+</button>
     </div>
 </div>
 
@@ -27,13 +27,11 @@
 
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
-
                 let data = {
                     chatroom_id : $('#chatroom-status').attr('chatroom-id'),
                     chatroom_url : $('#chatroom-status').attr('chatroom-url'),
                     date : moment($('#new_date').val()).unix()
                 }
-                console.log(data);
                 socket.emit('date_created', data);
             }else{
                 alert('Invalid date');
@@ -55,12 +53,10 @@
         })
 
         socket.on('date_table_updated',(data)=>{
-            //render table here;
-
-            console.log(data);
+            //render table here
             let list =""
             for(let i = 0;i<data.length;i++){
-                let date =moment.unix(data[i].date);
+                let date =moment.unix(data[i].date).format("ddd,MMM Do YY,h:mm A");
                 list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted} data-id=${data[i].id}> ${date}
                 voted:${data[i].num_of_ppl}
             </li>`
@@ -74,7 +70,6 @@
     });
 function initialize(){
 
-    console.log($('#chatroom-status').attr('chatroom-id'));
     let data ={
         chatroom_id : $('#chatroom-status').attr('chatroom-id'),
         chatroom_url : $('#chatroom-status').attr('chatroom-url')

@@ -17,7 +17,6 @@ const Op = Sequelize.Op;
 client.once('ready', function () {
     // Flush Redis DB
     client.flushdb();
-
 });
 
 module.exports = (server) => {
