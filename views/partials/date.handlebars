@@ -31,7 +31,6 @@
 
         $('#add_date').on('click',()=>{
             if($('#new_date').val() != ""){
-                console.log(moment($('#new_date').val()).unix());
                 socket.emit('date_created',(moment($('#new_date').val())).unix());
             }else{
                 alert('Invalid date');
