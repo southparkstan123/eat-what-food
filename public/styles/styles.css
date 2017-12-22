@@ -38,3 +38,14 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+#chatroom-name {
+    color: rgb(182, 0, 0);
+    
+}
+.poll li{
+    padding: 4px 0;
+}
+
+textarea#message{
+    resize: none;
+}
