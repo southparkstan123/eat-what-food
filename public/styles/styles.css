@@ -1,12 +1,7 @@
 body {
-<<<<<<< HEAD
-    background-color: #e0e0e0;
-    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-=======
-    background-color: #6b7a8f;
+    background-color: #e6e6e6;
     /* font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; */
     font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
->>>>>>> layout
 }
 
 #login-header{
@@ -43,8 +38,9 @@ body {
 .poll li{
     padding: 4px 0;
 }
+
 .table-striped>tbody>tr:nth-of-type(odd){
-    background-color: #b195f1;
+    background-color: #919494;
 }
 
 @media (min-width: 768px){

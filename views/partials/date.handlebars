@@ -57,9 +57,9 @@
             let list =""
             for(let i = 0;i<data.length;i++){
                 let date =moment.unix(data[i].date).format("ddd,MMM Do YY,h:mm A");
-                list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted} data-id=${data[i].id}> ${date}
-                voted:${data[i].num_of_ppl}
-            </li>`
+                list +=`<li><span class ="badge">${data[i].num_of_ppl}</span>
+                    <input type='checkbox' class='date_poll' ${data[i].voted} data-id=${data[i].id}> ${date}
+                    </li>`
             }
             let table=`<ul class ="date_list" style ='list-style-type:none;padding:0px'>${list}</ul>`
                 $('#date_list').html(table)
