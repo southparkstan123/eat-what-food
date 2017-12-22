@@ -1,0 +1,20 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <h4 class="navbar-text">Eat What Food</h4>
+        <ul class="nav navbar-nav navbar-right">
+            <li><button class="btn btn-danger btn-sm navbar-btn" id="logout">Logout</button></li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    //Click the 'Leave chatroom' button to logout
+    $("#logout").click((e) => {
+        let isLogout = confirm('Are you sure to logout?');
+        if (isLogout == true) {
+            alert('See you again!');
+            socket.emit('user_logout');
+            window.location.href = '/logout';
+        }
+    });
+</script>

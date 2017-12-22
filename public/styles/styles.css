@@ -31,3 +31,17 @@ body {
 .poll li{
     padding: 4px 0;
 }
+.table-striped>tbody>tr:nth-of-type(odd){
+    background-color: #b195f1;
+}
+
+@media (min-width: 768px){
+    .navbar {
+        border-radius: 0;
+    }
+}
+
+#logout{
+    margin-left: 10px;
+    margin-right: 10px;
+}
