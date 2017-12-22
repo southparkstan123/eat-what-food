@@ -1,10 +1,11 @@
 body {
     background-color: #6b7a8f;
-    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    /* font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; */
+    font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 #login-header{
-    background-image:url("../images/restaurant.png");
+    background-image:radial-gradient(circle at 50% 50%,rgba(0,0,0,0.46),rgba(0,0,0,0.88)),url("../images/restaurant.png");
     background-size: cover;
     max-width:100%;
     min-height: 100%;
@@ -18,10 +19,16 @@ body {
 
 #login-container {
     text-align: center;
+    
 } 
 
 #login-title {
     color: #ffffff;
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    padding: 20px;
+    letter-spacing: 1px;
+    font-weight: 700;
 }
 
 .table-striped>tbody>tr:nth-of-type(odd){
