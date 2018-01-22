@@ -93,9 +93,11 @@ module.exports = (express) => {
         }).then((chatroom) => {
             res.render('chatroom', {chatroom : chatroom});
         }).catch(err => console.log(err));
+        // [CODE REVIEW] Rejection caught here but no "res.json" for errors. Endless loading may happen.
     });
 
     router.get('/api/chatroom_list',isLoggedIn, (req,res) =>{
+        // [CODE REVIEW] No catch rejection. Endless loading may happen.
         UserModel.findOne({
             where: {
                 facebookId: {
@@ -151,6 +153,9 @@ module.exports = (express) => {
             },
             attributes: ['id']
         }).then((user) => {
+            /* [CODE REVIEW] Should use "chained" promised" instead of nested one
+             * The benefit would be having only one catch instead of 
+             * having so many catches here */
             let chatroom = new ChatroomModel();
             chatroom.createdBy = user.id;
             chatroom.chatroomName = req.body.chatroomName;
@@ -221,6 +226,7 @@ module.exports = (express) => {
     });
 
     router.post('/api/invite_users/:chatroom_id',isLoggedIn, (req,res) => {
+        // [CODE REVIEW] No response here 😱
 
         //All ids for invited user
         let user_ids = req.body.users;

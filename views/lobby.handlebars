@@ -43,8 +43,11 @@
 
 
 <script>
+    // [CODE REVIEW] Inline javascript [sosad]
+
     $(function(){
 
+        // [CODE REVIEW] vvvv consistent naming! use camelCase (i.e. fetchChatroomList() )
         fetch_chatroom_list();
 
         $('#create-group').submit((e)=>{
@@ -55,6 +58,7 @@
             }).done(function(data){
                 console.log(data);
 
+                // [CODE REVIEW] XSS Vulnerable below
                 let html = `<tr>
                     <td>${data.chatroomName}</td>
                     <td>${data.createdAt}</td>
@@ -63,6 +67,7 @@
                 $('tbody#chatroom-list-created-by-user').append(html);
                 
             }).fail(function(err){
+                // [CODE REVIEW] Should gracefully fail
                 console.log(err);
             });
         });
@@ -86,6 +91,7 @@
 
         socket.on('add_chatroom_list', (data) => {
             console.log(data);
+            // [CODE REVIEW] XSS Vulnerable below
             let html = `<tr>
                 <td>${data.chatroomName}</td>
                 <td>${data.createdAt}</td>
@@ -104,6 +110,7 @@
             if(data.creates.length > 0){
                 let chatrooms_html = '';
                 data.creates.forEach((chatroom) => {
+                    // [CODE REVIEW] XSS Vulnerable below
                     chatrooms_html += `<tr>
                         <td>${chatroom.chatroomName}</td>
                         <td>${chatroom.createdAt}</td>

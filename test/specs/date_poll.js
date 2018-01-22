@@ -11,6 +11,7 @@ describe('Connect page', ()=>{
     it('date value can be added',()=>{
         $("#calendar").click();
         let val = $('#new_date').getValue();
+        // [CODE REVIEW] which means expect(val).toBe(false); ?!
         val = (val !="")
         expect(val).toBe(true);
     })

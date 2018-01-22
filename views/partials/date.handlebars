@@ -55,6 +55,7 @@
             let list =""
             for(let i = 0;i<data.length;i++){
                 let date =moment.unix(data[i].date);
+                // [CODE REVIEW] Should format the date below
                 list +=`<li><input type='checkbox' class='date_poll' ${data[i].voted}> ${date}
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"

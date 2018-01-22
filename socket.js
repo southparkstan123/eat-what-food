@@ -12,6 +12,8 @@ const Op = Sequelize.Op;
 
 client.once('ready', function () {
     // Flush Redis DB
+
+    // [CODE REVIEW] ??????
     client.flushdb();
 
 });
@@ -91,6 +93,7 @@ module.exports = (server) => {
                 username: socket.session.passport.user.profile.displayName,
                 userid: socket.session.passport.user.profile.id,
                 content: content,
+                 // [CODE REVIEW] i.e. Date.now()
                 date: new Date().getTime()
             };
 
@@ -112,6 +115,7 @@ module.exports = (server) => {
                         return user.userID == socket.session.passport.user.profile.id;
                     });
                     console.log(JSON.stringify(leave_user[0]));
+                    // [CODE REVIEW] Not sure if below will get race condition
                     client.lrem('online_user_list', 0, JSON.stringify(leave_user[0]), (err, reply) => {
                         if (reply) {
                             client.lrange('online_user_list', 0, -1, (err, reply) => {
@@ -139,6 +143,7 @@ module.exports = (server) => {
                         return user.userID == socket.session.passport.user.profile.id;
                     });
                     // console.log(JSON.stringify(leave_user[0]));
+                    // [CODE REVIEW] Not sure if below will get race condition
                     client.srem('users_in_chatroom_' + chatroom_url, 0, JSON.stringify(leave_user[0]), (err, reply) => {
                         if (reply) {
                             client.smembers('users_in_chatroom_' + chatroom_url, (err, reply) => {
@@ -192,6 +197,7 @@ module.exports = (server) => {
                             .then((voteData) => {
                                 let output = [];
                                 let total_number_of_ppl = 20;
+                                // [CODE REVIEW] What is the hard code above?
                                 for (let i = 0; i < voteData.length; i++) {
                                     output.push({
                                         date: voteData[i].date,
@@ -238,6 +244,7 @@ module.exports = (server) => {
                     .then((voteData) => {
                         let output = [];
                         let total_number_of_ppl = 20;
+                        // [CODE REVIEW] What is the hard code above? Dead code should be removed. Git will save the history
                         for (let i = 0; i < voteData.length; i++) {
                             output.push({
                                 date: voteData[i].date,
